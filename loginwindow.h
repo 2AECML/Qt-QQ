@@ -1,5 +1,5 @@
-#ifndef WIDGET_H
-#define WIDGET_H
+#ifndef LOGINWINDOW_H
+#define LOGINWINDOW_H
 
 #include <QWidget>
 
@@ -18,9 +18,12 @@ public:
     ~LoginWindow();
 
 protected:
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
+    void installEventFilters();
+    bool eventFilter(QObject *obj, QEvent *event) override;
 private slots:
     void onCloseBtnClicked();
     void onMinimizeBtnClicked();
@@ -33,6 +36,7 @@ private:
 private:
     Ui::Widget *ui;
     QPoint mDragPosition;
-    bool mAgreeChecked;
+    bool mDragEnabled = true;
+    bool mAgreeChecked = false;
 };
-#endif // WIDGET_H
+#endif // LOGINWINDOW_H

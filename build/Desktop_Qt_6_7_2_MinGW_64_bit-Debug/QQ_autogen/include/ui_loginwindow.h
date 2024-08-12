@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'widget.ui'
+** Form generated from reading UI file 'loginwindow.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.7.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_WIDGET_H
-#define UI_WIDGET_H
+#ifndef UI_LOGINWINDOW_H
+#define UI_LOGINWINDOW_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -73,19 +73,9 @@ public:
         Widget->setBaseSize(QSize(0, 0));
         Widget->setStyleSheet(QString::fromUtf8("\n"
 "#Widget {\n"
-"	background-color: qlineargradient(spread: pad, x1: 0, y1: 1, x2: 1, y2: 0, \n"
-"    stop: 0 rgba(209, 107, 165, 255), \n"
-"    stop: 0.1 rgba(199, 119, 185, 255), \n"
-"    stop: 0.2 rgba(186, 131, 202, 255), \n"
-"    stop: 0.3 rgba(170, 143, 216, 255), \n"
-"    stop: 0.4 rgba(154, 154, 225, 255), \n"
-"    stop: 0.5 rgba(138, 167, 236, 255), \n"
-"    stop: 0.6 rgba(121, 179, 244, 255), \n"
-"    stop: 0.7 rgba(105, 191, 248, 255), \n"
-"    stop: 0.8 rgba(82, 207, 254, 255), \n"
-"    stop: 0.9 rgba(65, 223, 255, 255), \n"
-"    stop: 1 rgba(70, 239, 250, 255), \n"
-"    stop: 1.1 rgba(95, 251, 241, 255)\n"
+"	background-color: qlineargradient(spread: pad, x1: 0, y1: 1, x2: 0, y2: 0, \n"
+"    stop: 0 rgba(255, 241, 235, 255), \n"
+"    stop: 1 rgba(172, 224, 249, 255)\n"
 ");\n"
 "}\n"
 "\n"
@@ -109,8 +99,7 @@ public:
 "}\n"
 "\n"
 "#minimizeBtn:hover {\n"
-"	ba"
-                        "ckground-color: rgba(0, 0, 0, 60);\n"
+"	background-color: rgba(0, 0, 0, 60);\n"
 "}\n"
 "\n"
 "#settingBtn {\n"
@@ -131,7 +120,8 @@ public:
 "	border: 1px solid transparent;\n"
 "	border-radius: 10px;\n"
 "	padding-left: 10px;\n"
-"	background-color: rgba(255, 255, 255, 200);\n"
+"	background-color: "
+                        "rgba(255, 255, 255, 200);\n"
 "}\n"
 "\n"
 "#accountInput:focus,\n"
@@ -373,4 +363,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // UI_WIDGET_H
+#endif // UI_LOGINWINDOW_H
