@@ -1,20 +1,24 @@
 #include "loginwindow.h"
 #include "./ui_loginwindow.h"
-#include <QMouseEvent>
 #include <QPropertyAnimation>
+#include <QFile>
+#include <QStyle>
+#include <QStyleOption>
+#include <QPainter>
+#include <QGraphicsDropShadowEffect>
 
 LoginWindow::LoginWindow(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::Widget)
-{
+    , ui(new Ui::Widget) {
     ui->setupUi(this);
     setWindowFlag(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
     setupConnection();
     installEventFilters();
+    loadStyle();
 }
 
-LoginWindow::~LoginWindow()
-{
+LoginWindow::~LoginWindow() {
     delete ui;
 }
 
@@ -32,13 +36,11 @@ bool LoginWindow::eventFilter(QObject *obj, QEvent *event) {
 
     if (event->type() == QEvent::MouseButtonPress) {
         if (button) {
-            qDebug() << "Mouse press on button:" << button;
             mDragEnabled = false; // 点击按钮，禁用拖动
         }
     }
     else if (event->type() == QEvent::MouseButtonRelease) {
         if (button) {
-            qDebug() << "Mouse release on button" << button;
             mDragEnabled = true;
         }
     }
@@ -46,17 +48,20 @@ bool LoginWindow::eventFilter(QObject *obj, QEvent *event) {
     return QWidget::eventFilter(obj, event);
 }
 
+void LoginWindow::paintEvent(QPaintEvent *evnet) {
+    QStyleOption opt;
+    opt.initFrom(this);
+    QPainter painter(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+}
+
 void LoginWindow::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         if (mDragEnabled) {
             mDragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
-            qDebug() << "Mouse press. Drag position set to:" << mDragPosition;
-        } else {
-            qDebug() << "Dragging disabled. Mouse press ignored.";
         }
         event->accept();
     } else {
-        qDebug() << "Mouse press ignored. Button:" << event->button();
         QWidget::mousePressEvent(event); // 调用基类处理其他按键事件
     }
 }
@@ -65,10 +70,8 @@ void LoginWindow::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons() & Qt::LeftButton && mDragEnabled) {
         QPoint newPos = event->globalPosition().toPoint() - mDragPosition;
         move(newPos);
-        qDebug() << "Mouse move. New position:" << newPos;
         event->accept();
     } else {
-        qDebug() << "Mouse move ignored. Dragging enabled:" << mDragEnabled;
         QWidget::mouseMoveEvent(event); // 调用基类处理其他移动事件
     }
 }
@@ -76,11 +79,28 @@ void LoginWindow::mouseMoveEvent(QMouseEvent *event) {
 void LoginWindow::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         mDragEnabled = true; // 鼠标释放，重新启用拖动
-        qDebug() << "Mouse released. Dragging enabled.";
         event->accept();
     } else {
-        qDebug() << "Mouse release ignored. Button:" << event->button();
         QWidget::mouseReleaseEvent(event); // 调用基类处理其他释放事件
+    }
+}
+
+void LoginWindow::setupConnection() const {
+    connect(ui->closeBtn, &QToolButton::clicked, this, &LoginWindow::onCloseBtnClicked);
+
+    connect(ui->minimizeBtn, &QToolButton::clicked, this, &LoginWindow::onMinimizeBtnClicked);
+
+    connect(ui->agreeBtn, &QRadioButton::clicked, this, &LoginWindow::onAgreeBtnClicked);
+
+    connect(ui->loginBtn, &QPushButton::clicked, this, &LoginWindow::onLoginBtnClicked);
+}
+
+void LoginWindow::loadStyle() {
+    // 加载 QSS 文件
+    QFile file(":/qss/loginstyle.qss");
+    if (file.open(QFile::ReadOnly)) {
+        QString styleSheet = file.readAll();
+        this->setStyleSheet(styleSheet);
     }
 }
 
@@ -97,8 +117,15 @@ void LoginWindow::onCloseBtnClicked() {
 }
 
 void LoginWindow::onMinimizeBtnClicked() {
-    // 最小化窗口
-    this->showMinimized();
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
+    animation->setDuration(200); // 动画持续时间
+    animation->setStartValue(1.0);
+    animation->setEndValue(0.0);
+    connect(animation, &QPropertyAnimation::finished, this, [this]() {
+        this->showMinimized();
+        this->setWindowOpacity(1.0); // 恢复透明度
+    });
+    animation->start(QPropertyAnimation::DeleteWhenStopped);
 }
 
 void LoginWindow::onAgreeBtnClicked(bool checked)
@@ -106,13 +133,17 @@ void LoginWindow::onAgreeBtnClicked(bool checked)
     QPushButton* loginBtn = ui->loginBtn;
     mAgreeChecked = checked;
     if (checked) {
-        loginBtn->setStyleSheet("background-color: blue");
+        loginBtn->setProperty("agreement", "true");
         loginBtn->setCursor(Qt::PointingHandCursor);
     }
     else {
-        loginBtn->setStyleSheet("background-color: rgb(33, 174, 250)");
+        loginBtn->setProperty("agreement", "false");
         loginBtn->setCursor(Qt::ForbiddenCursor);
     }
+    // 强制重新应用样式
+    loginBtn->style()->unpolish(loginBtn);
+    loginBtn->style()->polish(loginBtn);
+    loginBtn->update();
 }
 
 void LoginWindow::onLoginBtnClicked() {
@@ -121,13 +152,5 @@ void LoginWindow::onLoginBtnClicked() {
     }
 }
 
-void LoginWindow::setupConnection() const {
-    connect(ui->closeBtn, &QToolButton::clicked, this, &LoginWindow::onCloseBtnClicked);
 
-    connect(ui->minimizeBtn, &QToolButton::clicked, this, &LoginWindow::onMinimizeBtnClicked);
-
-    connect(ui->agreeBtn, &QRadioButton::clicked, this, &LoginWindow::onAgreeBtnClicked);
-
-    connect(ui->loginBtn, &QPushButton::clicked, this, &LoginWindow::onLoginBtnClicked);
-}
 

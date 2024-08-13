@@ -2,6 +2,8 @@
 #define LOGINWINDOW_H
 
 #include <QWidget>
+#include <QMouseEvent>
+#include <QPaintEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,17 +23,19 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-
     void installEventFilters();
     bool eventFilter(QObject *obj, QEvent *event) override;
+    void paintEvent(QPaintEvent* evnet) override;
+
+private:
+    void setupConnection() const;
+    void loadStyle();
+
 private slots:
     void onCloseBtnClicked();
     void onMinimizeBtnClicked();
     void onAgreeBtnClicked(bool checked);
     void onLoginBtnClicked();
-
-private:
-    void setupConnection() const;
 
 private:
     Ui::Widget *ui;
