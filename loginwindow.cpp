@@ -10,11 +10,17 @@
 LoginWindow::LoginWindow(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget) {
+
     ui->setupUi(this);
+
     setWindowFlag(Qt::FramelessWindowHint);
+
     setAttribute(Qt::WA_TranslucentBackground);
+
     setupConnection();
+
     installEventFilters();
+
     loadStyle();
 }
 
@@ -148,9 +154,7 @@ void LoginWindow::onAgreeBtnClicked(bool checked)
 
 void LoginWindow::onLoginBtnClicked() {
     if (mAgreeChecked == true) {
-        qDebug() << "登录按钮被点击";
+        qDebug() << "账号：" << ui->accountInput->text();
+        qDebug() << "密码：" << ui->passwordInput->text();
     }
 }
-
-
-

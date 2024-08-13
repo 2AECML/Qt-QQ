@@ -45,15 +45,15 @@
 
 #accountInput,
 #passwordInput {
-	border: 1px solid transparent;
+	border: 2px solid transparent;
 	border-radius: 10px;
 	padding-left: 10px;
-	background-color: rgba(255, 255, 255, 200);
+	background-color: rgba(255, 255, 255, 160);
 }
 
 #accountInput:focus,
 #passwordInput:focus {
-    border: 1px solid rgb(18, 150, 219);
+    border: 2px solid rgb(18, 150, 219);
 	background-color: rgba(255, 255, 255, 255)
 }
 

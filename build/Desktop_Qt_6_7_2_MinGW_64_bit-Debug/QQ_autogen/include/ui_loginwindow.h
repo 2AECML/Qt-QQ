@@ -182,6 +182,7 @@ public:
         font1.setPointSize(12);
         font1.setBold(false);
         accountInput->setFont(font1);
+        accountInput->setMaxLength(11);
 
         verticalLayout->addWidget(accountInput);
 
@@ -191,6 +192,8 @@ public:
         QFont font2;
         font2.setPointSize(12);
         passwordInput->setFont(font2);
+        passwordInput->setMaxLength(16);
+        passwordInput->setEchoMode(QLineEdit::EchoMode::Password);
 
         verticalLayout->addWidget(passwordInput);
 
@@ -277,12 +280,12 @@ public:
         minimizeBtn->setText(QString());
         closeBtn->setText(QString());
         profileImg->setText(QString());
-        accountInput->setPlaceholderText(QCoreApplication::translate("Widget", "QQ\345\217\267\347\240\201/\346\211\213\346\234\272/\351\202\256\347\256\261", nullptr));
+        accountInput->setPlaceholderText(QCoreApplication::translate("Widget", "QQ\345\217\267\347\240\201/\346\211\213\346\234\272", nullptr));
         passwordInput->setPlaceholderText(QCoreApplication::translate("Widget", "\345\257\206\347\240\201", nullptr));
         agreeBtn->setText(QCoreApplication::translate("Widget", "\345\267\262\351\230\205\350\257\273\345\271\266\345\220\214\346\204\217\346\234\215\345\212\241\345\215\217\350\256\256\345\222\214QQ\351\232\220\347\247\201\344\277\235\346\212\244\346\214\207\345\274\225", nullptr));
         loginBtn->setText(QCoreApplication::translate("Widget", "\347\231\273\345\275\225", nullptr));
-        scanBtn->setText(QCoreApplication::translate("Widget", "\346\211\253\347\240\201\347\231\273\345\275\225", nullptr));
-        moreBtn->setText(QCoreApplication::translate("Widget", "\346\233\264\345\244\232\351\200\211\351\241\271", nullptr));
+        scanBtn->setText(QCoreApplication::translate("Widget", "\346\263\250\345\206\214\350\264\246\345\217\267", nullptr));
+        moreBtn->setText(QCoreApplication::translate("Widget", "\345\277\230\350\256\260\345\257\206\347\240\201", nullptr));
     } // retranslateUi
 
 };
