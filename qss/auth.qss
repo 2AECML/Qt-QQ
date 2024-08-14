@@ -1,5 +1,5 @@
 
-#Widget {
+#AuthWindow {
 	background-color: qlineargradient(spread: pad, x1: 0, y1: 1, x2: 0, y2: 0, 
     stop: 0 rgba(255, 241, 235, 255), 
     stop: 1 rgba(172, 224, 249, 255));
@@ -43,18 +43,40 @@
 	border-radius: 40px;
 }
 
-#accountInput,
-#passwordInput {
+QLineEdit {
 	border: 2px solid transparent;
 	border-radius: 10px;
 	padding-left: 10px;
 	background-color: rgba(255, 255, 255, 160);
 }
 
-#accountInput:focus,
-#passwordInput:focus {
+QLineEdit:focus {
     border: 2px solid rgb(18, 150, 219);
 	background-color: rgba(255, 255, 255, 255)
+}
+
+QLineEdit[valid="false"] {
+	border: 2px solid rgb(255, 91, 91);
+}
+
+#registerVcodeInput {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-right: 0;
+}
+
+#registerVcodeBtn {
+	border-radius: 10px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	background-color: rgba(255, 255, 255, 160);
+	border: 2px solid transparent;
+	border-left: 0;
+	color: rgb(121, 121, 121);
+}
+
+#registerVcodeBtn[waiting="true"] {
+	color: darkgray;
 }
 
 #loginBtn {
@@ -76,8 +98,45 @@
 	background-color: rgb(158, 218, 255);
 }
 
-#scanBtn,
-#moreBtn {
+#registerBtn {
+    background-color: rgb(37, 37, 255);
+	border: none;
+	border-radius: 10px;
+	color: white;
+}
+
+#registerBtn:hover {
+    background-color: rgb(75, 75, 255);
+}
+
+#loginBtn[agreement="true"]:pressed,
+#registerBtn:pressed {
+	background-color: rgb(21, 21, 255);
+}
+
+#toRegisterBtn,
+#toLoginBtn,
+#forgotBtn {
 	background-color: transparent;
 	color: rgb(33, 174, 250);
+}
+
+#nicknameHint,
+#passwordHint,
+#phoneHint {
+	color: rgb(121, 121, 121);
+	padding-left: 10px;
+}
+
+#nicknameHint[valid="true"],
+#passwordHint[valid="true"],
+#phoneHint[valid="true"] {
+	color: rgb(50, 147, 71);
+	padding-left: 10px;
+}
+
+#nicknameHint[valid="false"],
+#passwordHint[valid="false"],
+#phoneHint[valid="false"] {
+	color: rgb(255, 91, 91);
 }
