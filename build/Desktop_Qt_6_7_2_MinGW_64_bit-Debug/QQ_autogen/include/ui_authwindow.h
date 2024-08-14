@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'loginwindow.ui'
+** Form generated from reading UI file 'authwindow.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.7.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_LOGINWINDOW_H
-#define UI_LOGINWINDOW_H
+#ifndef UI_AUTHWINDOW_H
+#define UI_AUTHWINDOW_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -25,7 +25,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_LoginWindow
+class Ui_AuthWindow
 {
 public:
     QVBoxLayout *verticalLayout_2;
@@ -63,12 +63,18 @@ public:
     QWidget *registerPage;
     QVBoxLayout *verticalLayout_5;
     QWidget *registerContent;
-    QVBoxLayout *verticalLayout_4;
+    QVBoxLayout *verticalLayout;
     QSpacerItem *verticalSpacer_7;
     QLineEdit *registerNicknameInput;
+    QLabel *nicknameHint;
+    QHBoxLayout *horizontalLayout_3;
     QLineEdit *registerPasswordInput;
+    QLabel *passwordHint;
     QLineEdit *registerPhoneInput;
+    QLabel *phoneHint;
+    QHBoxLayout *horizontalLayout_2;
     QLineEdit *registerVcodeInput;
+    QPushButton *registerVcodeBtn;
     QSpacerItem *verticalSpacer_8;
     QPushButton *registerBtn;
     QSpacerItem *verticalSpacer_9;
@@ -77,26 +83,26 @@ public:
     QPushButton *toLoginBtn;
     QSpacerItem *horizontalSpacer_15;
 
-    void setupUi(QWidget *LoginWindow)
+    void setupUi(QWidget *AuthWindow)
     {
-        if (LoginWindow->objectName().isEmpty())
-            LoginWindow->setObjectName("LoginWindow");
-        LoginWindow->resize(300, 420);
+        if (AuthWindow->objectName().isEmpty())
+            AuthWindow->setObjectName("AuthWindow");
+        AuthWindow->resize(300, 420);
         QSizePolicy sizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(LoginWindow->sizePolicy().hasHeightForWidth());
-        LoginWindow->setSizePolicy(sizePolicy);
-        LoginWindow->setMinimumSize(QSize(300, 420));
-        LoginWindow->setMaximumSize(QSize(16777215, 16777215));
-        LoginWindow->setSizeIncrement(QSize(0, 0));
-        LoginWindow->setBaseSize(QSize(0, 0));
-        LoginWindow->setStyleSheet(QString::fromUtf8(""));
-        verticalLayout_2 = new QVBoxLayout(LoginWindow);
+        sizePolicy.setHeightForWidth(AuthWindow->sizePolicy().hasHeightForWidth());
+        AuthWindow->setSizePolicy(sizePolicy);
+        AuthWindow->setMinimumSize(QSize(300, 420));
+        AuthWindow->setMaximumSize(QSize(16777215, 16777215));
+        AuthWindow->setSizeIncrement(QSize(0, 0));
+        AuthWindow->setBaseSize(QSize(0, 0));
+        AuthWindow->setStyleSheet(QString::fromUtf8(""));
+        verticalLayout_2 = new QVBoxLayout(AuthWindow);
         verticalLayout_2->setSpacing(7);
         verticalLayout_2->setObjectName("verticalLayout_2");
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        titleBar = new QWidget(LoginWindow);
+        titleBar = new QWidget(AuthWindow);
         titleBar->setObjectName("titleBar");
         horizontalLayout = new QHBoxLayout(titleBar);
         horizontalLayout->setSpacing(0);
@@ -140,7 +146,7 @@ public:
 
         verticalLayout_2->addWidget(titleBar);
 
-        stackedWidget = new QStackedWidget(LoginWindow);
+        stackedWidget = new QStackedWidget(AuthWindow);
         stackedWidget->setObjectName("stackedWidget");
         stackedWidget->setAutoFillBackground(false);
         loginPage = new QWidget();
@@ -148,7 +154,7 @@ public:
         verticalLayout_6 = new QVBoxLayout(loginPage);
         verticalLayout_6->setSpacing(0);
         verticalLayout_6->setObjectName("verticalLayout_6");
-        verticalLayout_6->setContentsMargins(20, 20, 20, 20);
+        verticalLayout_6->setContentsMargins(20, 10, 20, 20);
         loginContent = new QWidget(loginPage);
         loginContent->setObjectName("loginContent");
         QSizePolicy sizePolicy1(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Expanding);
@@ -302,19 +308,17 @@ public:
         verticalLayout_5 = new QVBoxLayout(registerPage);
         verticalLayout_5->setSpacing(0);
         verticalLayout_5->setObjectName("verticalLayout_5");
-        verticalLayout_5->setContentsMargins(20, 20, 20, 20);
+        verticalLayout_5->setContentsMargins(20, 10, 20, 20);
         registerContent = new QWidget(registerPage);
         registerContent->setObjectName("registerContent");
         sizePolicy1.setHeightForWidth(registerContent->sizePolicy().hasHeightForWidth());
         registerContent->setSizePolicy(sizePolicy1);
         registerContent->setMinimumSize(QSize(0, 0));
-        verticalLayout_4 = new QVBoxLayout(registerContent);
-        verticalLayout_4->setSpacing(10);
-        verticalLayout_4->setObjectName("verticalLayout_4");
-        verticalLayout_4->setContentsMargins(0, 0, 0, 0);
+        verticalLayout = new QVBoxLayout(registerContent);
+        verticalLayout->setObjectName("verticalLayout");
         verticalSpacer_7 = new QSpacerItem(20, 50, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
-        verticalLayout_4->addItem(verticalSpacer_7);
+        verticalLayout->addItem(verticalSpacer_7);
 
         registerNicknameInput = new QLineEdit(registerContent);
         registerNicknameInput->setObjectName("registerNicknameInput");
@@ -325,8 +329,20 @@ public:
         registerNicknameInput->setFont(font1);
         registerNicknameInput->setMaxLength(24);
 
-        verticalLayout_4->addWidget(registerNicknameInput);
+        verticalLayout->addWidget(registerNicknameInput);
 
+        nicknameHint = new QLabel(registerContent);
+        nicknameHint->setObjectName("nicknameHint");
+        QFont font3;
+        font3.setPointSize(8);
+        nicknameHint->setFont(font3);
+        nicknameHint->setMargin(0);
+        nicknameHint->setIndent(-1);
+
+        verticalLayout->addWidget(nicknameHint);
+
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setObjectName("horizontalLayout_3");
         registerPasswordInput = new QLineEdit(registerContent);
         registerPasswordInput->setObjectName("registerPasswordInput");
         sizePolicy3.setHeightForWidth(registerPasswordInput->sizePolicy().hasHeightForWidth());
@@ -337,7 +353,15 @@ public:
         registerPasswordInput->setMaxLength(16);
         registerPasswordInput->setEchoMode(QLineEdit::EchoMode::PasswordEchoOnEdit);
 
-        verticalLayout_4->addWidget(registerPasswordInput);
+        horizontalLayout_3->addWidget(registerPasswordInput);
+
+
+        verticalLayout->addLayout(horizontalLayout_3);
+
+        passwordHint = new QLabel(registerContent);
+        passwordHint->setObjectName("passwordHint");
+
+        verticalLayout->addWidget(passwordHint);
 
         registerPhoneInput = new QLineEdit(registerContent);
         registerPhoneInput->setObjectName("registerPhoneInput");
@@ -346,20 +370,51 @@ public:
         registerPhoneInput->setMaxLength(11);
         registerPhoneInput->setEchoMode(QLineEdit::EchoMode::Normal);
 
-        verticalLayout_4->addWidget(registerPhoneInput);
+        verticalLayout->addWidget(registerPhoneInput);
 
+        phoneHint = new QLabel(registerContent);
+        phoneHint->setObjectName("phoneHint");
+
+        verticalLayout->addWidget(phoneHint);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(0);
+        horizontalLayout_2->setObjectName("horizontalLayout_2");
         registerVcodeInput = new QLineEdit(registerContent);
         registerVcodeInput->setObjectName("registerVcodeInput");
+        QSizePolicy sizePolicy4(QSizePolicy::Policy::Maximum, QSizePolicy::Policy::Fixed);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(registerVcodeInput->sizePolicy().hasHeightForWidth());
+        registerVcodeInput->setSizePolicy(sizePolicy4);
         registerVcodeInput->setMinimumSize(QSize(0, 40));
         registerVcodeInput->setFont(font2);
         registerVcodeInput->setMaxLength(6);
         registerVcodeInput->setEchoMode(QLineEdit::EchoMode::Normal);
 
-        verticalLayout_4->addWidget(registerVcodeInput);
+        horizontalLayout_2->addWidget(registerVcodeInput);
+
+        registerVcodeBtn = new QPushButton(registerContent);
+        registerVcodeBtn->setObjectName("registerVcodeBtn");
+        QSizePolicy sizePolicy5(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(registerVcodeBtn->sizePolicy().hasHeightForWidth());
+        registerVcodeBtn->setSizePolicy(sizePolicy5);
+        QFont font4;
+        font4.setPointSize(11);
+        registerVcodeBtn->setFont(font4);
+        registerVcodeBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+        registerVcodeBtn->setProperty("waiting", QVariant(false));
+
+        horizontalLayout_2->addWidget(registerVcodeBtn);
+
+
+        verticalLayout->addLayout(horizontalLayout_2);
 
         verticalSpacer_8 = new QSpacerItem(20, 60, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
-        verticalLayout_4->addItem(verticalSpacer_8);
+        verticalLayout->addItem(verticalSpacer_8);
 
         registerBtn = new QPushButton(registerContent);
         registerBtn->setObjectName("registerBtn");
@@ -367,11 +422,11 @@ public:
         registerBtn->setFont(font2);
         registerBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
 
-        verticalLayout_4->addWidget(registerBtn);
+        verticalLayout->addWidget(registerBtn);
 
         verticalSpacer_9 = new QSpacerItem(20, 55, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
-        verticalLayout_4->addItem(verticalSpacer_9);
+        verticalLayout->addItem(verticalSpacer_9);
 
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setObjectName("horizontalLayout_8");
@@ -391,7 +446,7 @@ public:
         horizontalLayout_8->addItem(horizontalSpacer_15);
 
 
-        verticalLayout_4->addLayout(horizontalLayout_8);
+        verticalLayout->addLayout(horizontalLayout_8);
 
 
         verticalLayout_5->addWidget(registerContent);
@@ -401,41 +456,45 @@ public:
         verticalLayout_2->addWidget(stackedWidget);
 
 
-        retranslateUi(LoginWindow);
+        retranslateUi(AuthWindow);
 
-        stackedWidget->setCurrentIndex(0);
+        stackedWidget->setCurrentIndex(1);
 
 
-        QMetaObject::connectSlotsByName(LoginWindow);
+        QMetaObject::connectSlotsByName(AuthWindow);
     } // setupUi
 
-    void retranslateUi(QWidget *LoginWindow)
+    void retranslateUi(QWidget *AuthWindow)
     {
-        LoginWindow->setWindowTitle(QCoreApplication::translate("LoginWindow", "Widget", nullptr));
+        AuthWindow->setWindowTitle(QCoreApplication::translate("AuthWindow", "Widget", nullptr));
         settingBtn->setText(QString());
         minimizeBtn->setText(QString());
         closeBtn->setText(QString());
         profileImg_2->setText(QString());
-        loginAccountInput->setPlaceholderText(QCoreApplication::translate("LoginWindow", "QQ\345\217\267\347\240\201/\346\211\213\346\234\272", nullptr));
-        loginPasswordInput->setPlaceholderText(QCoreApplication::translate("LoginWindow", "\345\257\206\347\240\201", nullptr));
-        loginAgreeBtn->setText(QCoreApplication::translate("LoginWindow", "\345\267\262\351\230\205\350\257\273\345\271\266\345\220\214\346\204\217\346\234\215\345\212\241\345\215\217\350\256\256\345\222\214QQ\351\232\220\347\247\201\344\277\235\346\212\244\346\214\207\345\274\225", nullptr));
-        loginBtn->setText(QCoreApplication::translate("LoginWindow", "\347\231\273\345\275\225", nullptr));
-        toRegisterBtn->setText(QCoreApplication::translate("LoginWindow", "\346\263\250\345\206\214\350\264\246\345\217\267", nullptr));
-        forgotBtn->setText(QCoreApplication::translate("LoginWindow", "\345\277\230\350\256\260\345\257\206\347\240\201", nullptr));
-        registerNicknameInput->setPlaceholderText(QCoreApplication::translate("LoginWindow", "\346\230\265\347\247\260", nullptr));
-        registerPasswordInput->setPlaceholderText(QCoreApplication::translate("LoginWindow", "\345\257\206\347\240\201", nullptr));
-        registerPhoneInput->setPlaceholderText(QCoreApplication::translate("LoginWindow", "\346\211\213\346\234\272\345\217\267\347\240\201", nullptr));
-        registerVcodeInput->setPlaceholderText(QCoreApplication::translate("LoginWindow", "\351\252\214\350\257\201\347\240\201", nullptr));
-        registerBtn->setText(QCoreApplication::translate("LoginWindow", "\346\263\250\345\206\214", nullptr));
-        toLoginBtn->setText(QCoreApplication::translate("LoginWindow", "\345\211\215\345\276\200\347\231\273\345\275\225", nullptr));
+        loginAccountInput->setPlaceholderText(QCoreApplication::translate("AuthWindow", "QQ\345\217\267\347\240\201/\346\211\213\346\234\272", nullptr));
+        loginPasswordInput->setPlaceholderText(QCoreApplication::translate("AuthWindow", "\345\257\206\347\240\201", nullptr));
+        loginAgreeBtn->setText(QCoreApplication::translate("AuthWindow", "\345\267\262\351\230\205\350\257\273\345\271\266\345\220\214\346\204\217\346\234\215\345\212\241\345\215\217\350\256\256\345\222\214QQ\351\232\220\347\247\201\344\277\235\346\212\244\346\214\207\345\274\225", nullptr));
+        loginBtn->setText(QCoreApplication::translate("AuthWindow", "\347\231\273\345\275\225", nullptr));
+        toRegisterBtn->setText(QCoreApplication::translate("AuthWindow", "\346\263\250\345\206\214\350\264\246\345\217\267", nullptr));
+        forgotBtn->setText(QCoreApplication::translate("AuthWindow", "\345\277\230\350\256\260\345\257\206\347\240\201", nullptr));
+        registerNicknameInput->setPlaceholderText(QCoreApplication::translate("AuthWindow", "\346\230\265\347\247\260", nullptr));
+        nicknameHint->setText(QCoreApplication::translate("AuthWindow", "24\344\275\215\345\206\205\344\273\273\346\204\217\345\255\227\347\254\246\357\274\214\344\270\215\345\205\201\350\256\270\345\205\250\344\270\272\347\251\272\346\240\274", nullptr));
+        registerPasswordInput->setPlaceholderText(QCoreApplication::translate("AuthWindow", "\345\257\206\347\240\201", nullptr));
+        passwordHint->setText(QCoreApplication::translate("AuthWindow", "8-16\344\270\252\345\255\227\347\254\246\357\274\214\344\270\215\345\205\201\350\256\270\345\207\272\347\216\260\347\251\272\346\240\274\346\210\226\345\205\250\344\270\272\346\225\260\345\255\227", nullptr));
+        registerPhoneInput->setPlaceholderText(QCoreApplication::translate("AuthWindow", "\346\211\213\346\234\272\345\217\267\347\240\201", nullptr));
+        phoneHint->setText(QCoreApplication::translate("AuthWindow", "11\344\275\215\346\211\213\346\234\272\345\217\267\347\240\201", nullptr));
+        registerVcodeInput->setPlaceholderText(QCoreApplication::translate("AuthWindow", "\351\252\214\350\257\201\347\240\201", nullptr));
+        registerVcodeBtn->setText(QCoreApplication::translate("AuthWindow", "\345\217\221\351\200\201\351\252\214\350\257\201\347\240\201", nullptr));
+        registerBtn->setText(QCoreApplication::translate("AuthWindow", "\346\263\250\345\206\214", nullptr));
+        toLoginBtn->setText(QCoreApplication::translate("AuthWindow", "\345\211\215\345\276\200\347\231\273\345\275\225", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class LoginWindow: public Ui_LoginWindow {};
+    class AuthWindow: public Ui_AuthWindow {};
 } // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // UI_LOGINWINDOW_H
+#endif // UI_AUTHWINDOW_H

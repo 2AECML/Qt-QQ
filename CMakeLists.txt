@@ -14,9 +14,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
         main.cpp
-        loginwindow.cpp
-        loginwindow.h
-        loginwindow.ui
+        authwindow.cpp
+        authwindow.h
+        authwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -26,7 +26,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         images.qrc
         qss.qrc
         inputvalidator.h inputvalidator.cpp
-        registerwindow.h registerwindow.cpp registerwindow.ui
+
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QQ APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>qss/loginstyle.qss</file>
+        <file>qss/auth.qss</file>
     </qresource>
 </RCC>
