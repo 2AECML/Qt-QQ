@@ -4,7 +4,7 @@
 QString InputValidator::mAccountRegex = R"(^\d{5,11}$)";
 QString InputValidator::mPasswordRegex = R"(^(?!\d+$)[\w!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$)";
 QString InputValidator::mNicknameRegex = R"(^(?=.*\S).+$)";
-QString InputValidator::mPhoneRegex = R"(^\d{11}$)";
+QString InputValidator::mPhoneRegex = R"(^1\d{10}$)";
 
 bool InputValidator::isAccountValid(const QString& account) {
     return isExpressionValid(account, mAccountRegex);

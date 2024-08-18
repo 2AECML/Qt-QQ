@@ -10,12 +10,16 @@
 #include <QString>
 #include <QList>
 #include <QLabel>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
 
 AuthWindow::AuthWindow(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AuthWindow())
-    , vcodeTimer(new QTimer(this))
-    , countdownNum(60){
+    , mVcodeTimer(new QTimer(this))
+    , mCountdownNum(60)
+    , mNetworkManager(new AuthNetworkManager(this)){
 
     ui->setupUi(this);
 
@@ -64,14 +68,6 @@ void AuthWindow::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-void AuthWindow::installEventFilters() {
-    // 遍历 UI 中的所有按钮并安装事件过滤器
-    QList<QAbstractButton*> buttons = this->findChildren<QAbstractButton*>();
-    for (QAbstractButton* button : buttons) {
-        button->installEventFilter(this);
-    }
-}
-
 bool AuthWindow::eventFilter(QObject *obj, QEvent *event) {
     // 获取按钮
     QAbstractButton* button = qobject_cast<QAbstractButton*>(obj);
@@ -95,6 +91,23 @@ void AuthWindow::paintEvent(QPaintEvent *event) {
     opt.initFrom(this);
     QPainter painter(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+}
+
+void AuthWindow::closeEvent(QCloseEvent *event) {
+    // 关闭网络连接
+    if (mNetworkManager) {
+        mNetworkManager->disconnect();
+    }
+
+    event->accept();
+}
+
+void AuthWindow::installEventFilters() {
+    // 遍历 UI 中的所有按钮并安装事件过滤器
+    QList<QAbstractButton*> buttons = this->findChildren<QAbstractButton*>();
+    for (QAbstractButton* button : buttons) {
+        button->installEventFilter(this);
+    }
 }
 
 void AuthWindow::loadStyle() {
@@ -123,13 +136,17 @@ void AuthWindow::setupConnection() const {
 
     connect(ui->registerVcodeBtn, &QPushButton::clicked, this, &AuthWindow::onVcodeBtnClicked);
 
-    connect(vcodeTimer, &QTimer::timeout, this, &AuthWindow::updateVcodeBtnText);
+    connect(mVcodeTimer, &QTimer::timeout, this, &AuthWindow::updateVcodeBtnText);
 
     // 遍历所有QLineEdit对象
     QList<QLineEdit*> lineEdits = this->findChildren<QLineEdit*>();
     for (QLineEdit *lineEdit : lineEdits) {
         connect(lineEdit, &QLineEdit::editingFinished, this, &AuthWindow::onEditingFinished);
     }
+
+    connect(mNetworkManager, &AuthNetworkManager::loginResponse, this, &AuthWindow::onLoginResponse);
+
+    connect(mNetworkManager, &AuthNetworkManager::registerResponse, this, &AuthWindow::onRegisterResponse);
 }
 
 void AuthWindow::fadeOut(QWidget* targetPage) const {
@@ -185,19 +202,23 @@ void AuthWindow::fadeIn(QWidget *targetPage) const {
 void AuthWindow::updateVcodeBtnText() {
     QPushButton* vcodeBtn = ui->registerVcodeBtn;
 
-    if (countdownNum > 0) {
-        vcodeBtn->setText(QString("重新发送(%1)").arg(countdownNum--));
+    if (mCountdownNum > 0) {
+        vcodeBtn->setText(QString("重新发送(%1)").arg(mCountdownNum--));
     } else {
         vcodeBtn->setText("发送验证码");
         vcodeBtn->setProperty("waiting", false);
         vcodeBtn->setEnabled(true);
-        vcodeTimer->stop();
-        countdownNum = 60;
+        mVcodeTimer->stop();
+        mCountdownNum = 60;
     }
     // 强制重新应用样式
-    vcodeBtn->style()->unpolish(vcodeBtn);
-    vcodeBtn->style()->polish(vcodeBtn);
-    vcodeBtn->update();
+    updateStyle(vcodeBtn);
+}
+
+void AuthWindow::updateStyle(QWidget *w) {
+    w->style()->unpolish(w);
+    w->style()->polish(w);
+    w->update();
 }
 
 void AuthWindow::onCloseBtnClicked() {
@@ -239,10 +260,7 @@ void AuthWindow::onAgreeBtnClicked(bool checked)
         loginBtn->setCursor(Qt::ForbiddenCursor);
     }
 
-    // 强制重新应用样式
-    loginBtn->style()->unpolish(loginBtn);
-    loginBtn->style()->polish(loginBtn);
-    loginBtn->update();
+    updateStyle(loginBtn);
 }
 
 void AuthWindow::onVcodeBtnClicked() {
@@ -257,14 +275,11 @@ void AuthWindow::onVcodeBtnClicked() {
     if (!vcodeBtn->property("waiting").toBool()) {
         vcodeBtn->setProperty("waiting", true);
         vcodeBtn->setEnabled(false);
-        vcodeTimer->start(1000);
+        mVcodeTimer->start(1000);
         updateVcodeBtnText();
     }
 
-    // 强制重新应用样式
-    vcodeBtn->style()->unpolish(vcodeBtn);
-    vcodeBtn->style()->polish(vcodeBtn);
-    vcodeBtn->update();
+    updateStyle(vcodeBtn);
 }
 
 void AuthWindow::onLoginBtnClicked() {
@@ -272,11 +287,10 @@ void AuthWindow::onLoginBtnClicked() {
         const QString& account = ui->loginAccountInput->text();
         const QString& password = ui->loginPasswordInput->text();
 
-        qDebug() << "账号：" << account;
-        qDebug() << "密码：" << password;
+        // qDebug() << "账号：" << account;
+        // qDebug() << "密码：" << password;
 
-        InputValidator::isAccountValid(account) ? qDebug() << "账号合法" : qDebug() << "账号不合法";
-        InputValidator::isPasswordValid(password) ? qDebug() << "密码合法" : qDebug() << "密码不合法";
+        mNetworkManager->sendLoginRequest(account, password);
     }
 }
 
@@ -286,14 +300,22 @@ void AuthWindow::onRegisterBtnClicked() {
     const QString& phone = ui->registerPhoneInput->text();
     const QString& vcode = ui->registerVcodeInput->text();
 
-    qDebug() << "昵称：" << nickname;
-    qDebug() << "密码：" << password;
-    qDebug() << "手机号码：" << phone;
-    qDebug() << "验证码：" << vcode;
+    // qDebug() << "昵称：" << nickname;
+    // qDebug() << "密码：" << password;
+    // qDebug() << "手机号码：" << phone;
+    // qDebug() << "验证码：" << vcode;
 
-    InputValidator::isNicknameValid(nickname) ? qDebug() << "昵称合法" : qDebug() << "昵称不合法";
-    InputValidator::isPasswordValid(password) ? qDebug() << "密码合法" : qDebug() << "密码不合法";
-    InputValidator::isPhoneValid(phone) ? qDebug() << "手机号码合法" : qDebug() << "手机号码不合法";
+    bool nicknameValid = InputValidator::isNicknameValid(nickname);
+    bool passwordValid = InputValidator::isPasswordValid(password);
+    bool phoneValid = InputValidator::isPhoneValid(phone);
+
+    // nicknameValid ? qDebug() << "昵称合法" : qDebug() << "昵称不合法";
+    // passwordValid ? qDebug() << "密码合法" : qDebug() << "密码不合法";
+    // phoneValid ? qDebug() << "手机号码合法" : qDebug() << "手机号码不合法";
+
+    if (nicknameValid && passwordValid && phoneValid) {
+        mNetworkManager->sendRegisterRequest(nickname, password, phone, vcode);
+    }
 }
 
 void AuthWindow::onEditingFinished() {
@@ -328,10 +350,7 @@ void AuthWindow::onEditingFinished() {
             }
         }
 
-        // 强制重新应用样式
-        hint->style()->unpolish(hint);
-        hint->style()->polish(hint);
-        hint->update();
+        updateStyle(hint);
     }
     else if (lineName == "registerPasswordInput") {
         QLabel* hint = ui->passwordHint;
@@ -350,16 +369,13 @@ void AuthWindow::onEditingFinished() {
                 lineEdit->setProperty("valid", true);
             }
             else {
-                hint->setText("8-16个字符，不允许出现空格");
+                hint->setText("8-16个字符，不允许出现空格或全为数字");
                 hint->setProperty("valid", false);
                 lineEdit->setProperty("valid", false);
             }
         }
 
-        // 强制重新应用样式
-        hint->style()->unpolish(hint);
-        hint->style()->polish(hint);
-        hint->update();
+        updateStyle(hint);
     }
     else if (lineName == "registerPhoneInput") {
         QLabel* hint = ui->phoneHint;
@@ -384,17 +400,13 @@ void AuthWindow::onEditingFinished() {
             }
         }
 
-        // 强制重新应用样式
-        hint->style()->unpolish(hint);
-        hint->style()->polish(hint);
-        hint->update();
+        updateStyle(hint);
     }
     else {
         return;
     }
-    lineEdit->style()->unpolish(lineEdit);
-    lineEdit->style()->polish(lineEdit);
-    lineEdit->update();
+
+    updateStyle(lineEdit);
 }
 
 void AuthWindow::goToRegisterPage() {
@@ -411,4 +423,24 @@ void AuthWindow::goToLoginPage() {
     fadeIn(targetPage);
 
     ui->stackedWidget->setCurrentWidget(targetPage);
+}
+
+void AuthWindow::onLoginResponse(bool success, const QString &message) {
+    if (success) {
+        qDebug() << "Login successful:" << message;
+        // 处理登录成功逻辑
+    } else {
+        qDebug() << "Login failed:" << message;
+        // 处理登录失败逻辑
+    }
+}
+
+void AuthWindow::onRegisterResponse(bool success, const QString &message) {
+    if (success) {
+        qDebug() << "Register successful:" << message;
+        // 处理注册成功逻辑
+    } else {
+        qDebug() << "Register failed:" << message;
+        // 处理注册失败逻辑
+    }
 }
