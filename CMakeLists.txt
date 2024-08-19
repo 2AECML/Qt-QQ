@@ -27,6 +27,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         qss.qrc
         inputvalidator.h inputvalidator.cpp
         authnetworkmanager.h authnetworkmanager.cpp
+        loginwidget.h loginwidget.cpp loginwidget.ui
+        registerwidget.h registerwidget.cpp registerwidget.ui
+        waitwidget.h waitwidget.cpp waitwidget.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QQ APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

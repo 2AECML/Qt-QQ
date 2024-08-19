@@ -1,6 +1,5 @@
 #include "authwindow.h"
 #include "ui_authwindow.h"
-#include "inputvalidator.h"
 #include <QPropertyAnimation>
 #include <QFile>
 #include <QStyle>
@@ -10,22 +9,22 @@
 #include <QString>
 #include <QList>
 #include <QLabel>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlError>
 
 AuthWindow::AuthWindow(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AuthWindow())
-    , mVcodeTimer(new QTimer(this))
-    , mCountdownNum(60)
-    , mNetworkManager(new AuthNetworkManager(this)){
+    , mLoginPage(new LoginWidget(ui->stackedWidget))
+    , mRegisterPage(new RegisterWidget(ui->stackedWidget))
+    , mWaitPage(new WaitWidget(ui->stackedWidget))
+    , mNetworkManager(new AuthNetworkManager(this)) {
 
     ui->setupUi(this);
 
     setWindowFlag(Qt::FramelessWindowHint);
 
     setAttribute(Qt::WA_TranslucentBackground);
+
+    initPages();
 
     setupConnection();
 
@@ -119,34 +118,42 @@ void AuthWindow::loadStyle() {
     }
 }
 
-void AuthWindow::setupConnection() const {
+void AuthWindow::setupConnection() {
     connect(ui->closeBtn, &QToolButton::clicked, this, &AuthWindow::onCloseBtnClicked);
 
     connect(ui->minimizeBtn, &QToolButton::clicked, this, &AuthWindow::onMinimizeBtnClicked);
 
-    connect(ui->loginAgreeBtn, &QRadioButton::clicked, this, &AuthWindow::onAgreeBtnClicked);
+    connect(mLoginPage, &LoginWidget::loginSignal, this, [this](const QString& account, const QString& password) {
+        mNetworkManager->sendLoginRequest(account, password);
+        goToWaitPage(WaitWidget::Type::Logining);
+    });
 
-    connect(ui->loginBtn, &QPushButton::clicked, this, &AuthWindow::onLoginBtnClicked);
+    connect(mRegisterPage, &RegisterWidget::registerSignal, this, [this](const QString& nickname, const QString& password, const QString& phone, const QString& vcode) {
+        mNetworkManager->sendRegisterRequest(nickname, password, phone, vcode);
+        goToWaitPage(WaitWidget::Type::Registration);
+    });
 
-    connect(ui->registerBtn, &QPushButton::clicked, this, &AuthWindow::onRegisterBtnClicked);
+    connect(mLoginPage, &LoginWidget::goToRegisterSignal, this, &AuthWindow::goToRegisterPage);
 
-    connect(ui->toRegisterBtn, &QPushButton::clicked, this, &AuthWindow::goToRegisterPage);
-
-    connect(ui->toLoginBtn, &QPushButton::clicked, this, &AuthWindow::goToLoginPage);
-
-    connect(ui->registerVcodeBtn, &QPushButton::clicked, this, &AuthWindow::onVcodeBtnClicked);
-
-    connect(mVcodeTimer, &QTimer::timeout, this, &AuthWindow::updateVcodeBtnText);
-
-    // 遍历所有QLineEdit对象
-    QList<QLineEdit*> lineEdits = this->findChildren<QLineEdit*>();
-    for (QLineEdit *lineEdit : lineEdits) {
-        connect(lineEdit, &QLineEdit::editingFinished, this, &AuthWindow::onEditingFinished);
-    }
+    connect(mRegisterPage, &RegisterWidget::goToLoginSignal, this, &AuthWindow::goToLoginPage);
 
     connect(mNetworkManager, &AuthNetworkManager::loginResponse, this, &AuthWindow::onLoginResponse);
 
     connect(mNetworkManager, &AuthNetworkManager::registerResponse, this, &AuthWindow::onRegisterResponse);
+
+    connect(mWaitPage, &WaitWidget::cancelSignal, this, &AuthWindow::returnToLastPage);
+
+    connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &AuthWindow::onCurrentChanged);
+}
+
+void AuthWindow::initPages() {
+    ui->stackedWidget->addWidget(mLoginPage);
+    ui->stackedWidget->addWidget(mRegisterPage);
+    ui->stackedWidget->addWidget(mWaitPage);
+
+    ui->stackedWidget->setCurrentWidget(mLoginPage);
+
+    mLastPageIndex = ui->stackedWidget->currentIndex();
 }
 
 void AuthWindow::fadeOut(QWidget* targetPage) const {
@@ -199,22 +206,6 @@ void AuthWindow::fadeIn(QWidget *targetPage) const {
     animation->start();
 }
 
-void AuthWindow::updateVcodeBtnText() {
-    QPushButton* vcodeBtn = ui->registerVcodeBtn;
-
-    if (mCountdownNum > 0) {
-        vcodeBtn->setText(QString("重新发送(%1)").arg(mCountdownNum--));
-    } else {
-        vcodeBtn->setText("发送验证码");
-        vcodeBtn->setProperty("waiting", false);
-        vcodeBtn->setEnabled(true);
-        mVcodeTimer->stop();
-        mCountdownNum = 60;
-    }
-    // 强制重新应用样式
-    updateStyle(vcodeBtn);
-}
-
 void AuthWindow::updateStyle(QWidget *w) {
     w->style()->unpolish(w);
     w->style()->polish(w);
@@ -245,190 +236,45 @@ void AuthWindow::onMinimizeBtnClicked() {
     animation->start(QPropertyAnimation::DeleteWhenStopped);
 }
 
-void AuthWindow::onAgreeBtnClicked(bool checked)
-{
-    QPushButton* loginBtn = ui->loginBtn;
-
-    mAgreeChecked = checked;
-
-    if (checked) {
-        loginBtn->setProperty("agreement", true);
-        loginBtn->setCursor(Qt::PointingHandCursor);
-    }
-    else {
-        loginBtn->setProperty("agreement", false);
-        loginBtn->setCursor(Qt::ForbiddenCursor);
-    }
-
-    updateStyle(loginBtn);
-}
-
-void AuthWindow::onVcodeBtnClicked() {
-    bool validPhone = ui->registerPhoneInput->property("valid").toBool();
-
-    if (!validPhone) {
-        return;
-    }
-
-    QPushButton* vcodeBtn = ui->registerVcodeBtn;
-
-    if (!vcodeBtn->property("waiting").toBool()) {
-        vcodeBtn->setProperty("waiting", true);
-        vcodeBtn->setEnabled(false);
-        mVcodeTimer->start(1000);
-        updateVcodeBtnText();
-    }
-
-    updateStyle(vcodeBtn);
-}
-
-void AuthWindow::onLoginBtnClicked() {
-    if (mAgreeChecked == true) {
-        const QString& account = ui->loginAccountInput->text();
-        const QString& password = ui->loginPasswordInput->text();
-
-        // qDebug() << "账号：" << account;
-        // qDebug() << "密码：" << password;
-
-        mNetworkManager->sendLoginRequest(account, password);
-    }
-}
-
-void AuthWindow::onRegisterBtnClicked() {
-    const QString& nickname = ui->registerNicknameInput->text();
-    const QString& password = ui->registerPasswordInput->text();
-    const QString& phone = ui->registerPhoneInput->text();
-    const QString& vcode = ui->registerVcodeInput->text();
-
-    // qDebug() << "昵称：" << nickname;
-    // qDebug() << "密码：" << password;
-    // qDebug() << "手机号码：" << phone;
-    // qDebug() << "验证码：" << vcode;
-
-    bool nicknameValid = InputValidator::isNicknameValid(nickname);
-    bool passwordValid = InputValidator::isPasswordValid(password);
-    bool phoneValid = InputValidator::isPhoneValid(phone);
-
-    // nicknameValid ? qDebug() << "昵称合法" : qDebug() << "昵称不合法";
-    // passwordValid ? qDebug() << "密码合法" : qDebug() << "密码不合法";
-    // phoneValid ? qDebug() << "手机号码合法" : qDebug() << "手机号码不合法";
-
-    if (nicknameValid && passwordValid && phoneValid) {
-        mNetworkManager->sendRegisterRequest(nickname, password, phone, vcode);
-    }
-}
-
-void AuthWindow::onEditingFinished() {
-    QLineEdit* lineEdit = qobject_cast<QLineEdit*>(sender());
-
-    if (!lineEdit) {
-        return;
-    }
-
-    QString lineName = lineEdit->objectName();
-
-    if (lineName == "registerNicknameInput") {
-        QLabel* hint = ui->nicknameHint;
-
-        if (lineEdit->text().isEmpty()) {
-            hint->setText("昵称不能为空");
-            hint->setProperty("valid", false);
-            lineEdit->setProperty("valid", false);
-        }
-        else {
-            bool valid = InputValidator::isNicknameValid(lineEdit->text());
-
-            if (valid) {
-                hint->setText("昵称合法");
-                hint->setProperty("valid", true);
-                lineEdit->setProperty("valid", true);
-            }
-            else {
-                hint->setText("24位内任意字符，不允许全为空格");
-                hint->setProperty("valid", false);
-                lineEdit->setProperty("valid", false);
-            }
-        }
-
-        updateStyle(hint);
-    }
-    else if (lineName == "registerPasswordInput") {
-        QLabel* hint = ui->passwordHint;
-
-        if (lineEdit->text().isEmpty()) {
-            hint->setText("密码不能为空");
-            hint->setProperty("valid", false);
-            lineEdit->setProperty("valid", false);
-        }
-        else {
-            bool valid = InputValidator::isPasswordValid(lineEdit->text());
-
-            if (valid) {
-                hint->setText("密码合法");
-                hint->setProperty("valid", true);
-                lineEdit->setProperty("valid", true);
-            }
-            else {
-                hint->setText("8-16个字符，不允许出现空格或全为数字");
-                hint->setProperty("valid", false);
-                lineEdit->setProperty("valid", false);
-            }
-        }
-
-        updateStyle(hint);
-    }
-    else if (lineName == "registerPhoneInput") {
-        QLabel* hint = ui->phoneHint;
-
-        if (lineEdit->text().isEmpty()) {
-            hint->setText("手机号码不能为空");
-            hint->setProperty("valid", false);
-            lineEdit->setProperty("valid", false);
-        }
-        else {
-            bool valid = InputValidator::isPhoneValid(lineEdit->text());
-
-            if (valid) {
-                hint->setText("手机号码合法");
-                hint->setProperty("valid", true);
-                lineEdit->setProperty("valid", true);
-            }
-            else {
-                hint->setText("11位手机号码");
-                hint->setProperty("valid", false);
-                lineEdit->setProperty("valid", false);
-            }
-        }
-
-        updateStyle(hint);
-    }
-    else {
-        return;
-    }
-
-    updateStyle(lineEdit);
-}
-
 void AuthWindow::goToRegisterPage() {
-    QWidget* targetPage = ui->stackedWidget->widget(1);
+    mLastPageIndex = ui->stackedWidget->currentIndex();
 
-    fadeIn(targetPage);
+    int targetIndex = ui->stackedWidget->indexOf(mRegisterPage);
+    QWidget* targetPage = ui->stackedWidget->widget(targetIndex);
 
     ui->stackedWidget->setCurrentWidget(targetPage);
 }
 
 void AuthWindow::goToLoginPage() {
-    QWidget* targetPage = ui->stackedWidget->widget(0);
+    mLastPageIndex = ui->stackedWidget->currentIndex();
 
-    fadeIn(targetPage);
+    int targetIndex = ui->stackedWidget->indexOf(mLoginPage);
+    QWidget* targetPage = ui->stackedWidget->widget(targetIndex);
 
     ui->stackedWidget->setCurrentWidget(targetPage);
 }
 
+void AuthWindow::goToWaitPage(WaitWidget::Type waitType) {
+    mLastPageIndex = ui->stackedWidget->currentIndex();
+
+    mWaitPage->setType(waitType);
+
+    int targetIndex = ui->stackedWidget->indexOf(mWaitPage);
+    QWidget* targetPage = ui->stackedWidget->widget(targetIndex);
+
+    ui->stackedWidget->setCurrentWidget(targetPage);
+}
+
+void AuthWindow::returnToLastPage() {
+    ui->stackedWidget->setCurrentIndex(mLastPageIndex);
+}
+
 void AuthWindow::onLoginResponse(bool success, const QString &message) {
+    goToWaitPage(WaitWidget::Type::Logining);
     if (success) {
         qDebug() << "Login successful:" << message;
         // 处理登录成功逻辑
+
     } else {
         qDebug() << "Login failed:" << message;
         // 处理登录失败逻辑
@@ -436,11 +282,22 @@ void AuthWindow::onLoginResponse(bool success, const QString &message) {
 }
 
 void AuthWindow::onRegisterResponse(bool success, const QString &message) {
+    goToWaitPage(WaitWidget::Type::Registration);
     if (success) {
         qDebug() << "Register successful:" << message;
         // 处理注册成功逻辑
+
     } else {
         qDebug() << "Register failed:" << message;
         // 处理注册失败逻辑
     }
 }
+
+void AuthWindow::onCurrentChanged(int index) {
+    QWidget* currentPage = ui->stackedWidget->widget(index);
+    if (currentPage) {
+        fadeIn(currentPage);
+    }
+}
+
+

@@ -140,3 +140,13 @@ QLineEdit[valid="false"] {
 #phoneHint[valid="false"] {
 	color: rgb(255, 91, 91);
 }
+
+#cancelBtn {
+	background-color: transparent;
+	border: 1px solid #333;
+	border-radius: 5px;
+}
+
+#cancelBtn:hover {
+	background-color: rgba(153, 153, 153, 0.3);
+}

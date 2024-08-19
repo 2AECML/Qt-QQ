@@ -63,10 +63,29 @@ void AuthNetworkManager::onConnected() {
 }
 
 void AuthNetworkManager::onErrorOccurred(QAbstractSocket::SocketError socketError) {
-    qDebug() << "Socket error:" << socketError;
+    switch (socketError) {
+    case QAbstractSocket::ConnectionRefusedError:
+        qDebug() << "Error: Connection refused.";
+        break;
+    case QAbstractSocket::HostNotFoundError:
+        qDebug() << "Error: Host not found.";
+        break;
+    case QAbstractSocket::SocketTimeoutError:
+        qDebug() << "Error: Socket operation timed out.";
+        break;
+    case QAbstractSocket::NetworkError:
+        qDebug() << "Error: Network error.";
+        break;
+    case QAbstractSocket::UnknownSocketError:
+        qDebug() << "Error: Unknown socket error.";
+        break;
+    default:
+        qDebug() << "Error:" << mTcpSocket->errorString();
+        break;
+    }
 }
 
-void AuthNetworkManager::sendRequest(const QJsonObject &jsonData) {
+void AuthNetworkManager::sendRequest(const QJsonObject& jsonData) {
     if (mTcpSocket->state() == QAbstractSocket::UnconnectedState) {
         connectToServer();
     }

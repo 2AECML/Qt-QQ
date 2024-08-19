@@ -2,6 +2,9 @@
 #define AUTHWINDOW_H
 
 #include "authnetworkmanager.h"
+#include "loginwidget.h"
+#include "registerwidget.h"
+#include "waitwidget.h"
 #include <QWidget>
 #include <QMouseEvent>
 #include <QCloseEvent>
@@ -34,32 +37,38 @@ protected:
     void loadStyle();
 
 private:
-    void setupConnection() const;
+    void setupConnection();
+    void initPages();
     void fadeOut(QWidget* targetPage) const;
     void fadeIn(QWidget* targetPage) const;
-    void updateVcodeBtnText();
     void updateStyle(QWidget* w);
 
 private slots:
     void onCloseBtnClicked();
     void onMinimizeBtnClicked();
-    void onAgreeBtnClicked(bool checked);
-    void onVcodeBtnClicked();
-    void onLoginBtnClicked();
-    void onRegisterBtnClicked();
-    void onEditingFinished();
     void goToRegisterPage();
     void goToLoginPage();
+    void goToWaitPage(WaitWidget::Type waitType);
+    void returnToLastPage();
     void onLoginResponse(bool success, const QString& message);
     void onRegisterResponse(bool success, const QString& message);
+    void onCurrentChanged(int index);
 
 private:
     Ui::AuthWindow *ui;
+
     QPoint mDragPosition;
+
     bool mDragEnabled = true;
-    bool mAgreeChecked = false;
-    QTimer* mVcodeTimer;
-    short int mCountdownNum;
+
+    LoginWidget* mLoginPage;
+
+    RegisterWidget* mRegisterPage;
+
+    WaitWidget* mWaitPage;
+
+    int mLastPageIndex;
+
     AuthNetworkManager* mNetworkManager;
 };
 
