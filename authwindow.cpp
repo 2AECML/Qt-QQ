@@ -1,5 +1,6 @@
 #include "authwindow.h"
 #include "ui_authwindow.h"
+#include "authhintdialog.h"
 #include <QPropertyAnimation>
 #include <QFile>
 #include <QStyle>
@@ -141,7 +142,12 @@ void AuthWindow::setupConnection() {
 
     connect(mNetworkManager, &AuthNetworkManager::registerResponse, this, &AuthWindow::onRegisterResponse);
 
-    connect(mWaitPage, &WaitWidget::cancelSignal, this, &AuthWindow::returnToLastPage);
+    connect(mWaitPage, &WaitWidget::cancelSignal, this, [this]() {
+        mNetworkManager->disconnect();
+        returnToLastPage();
+    });
+
+    // connect()
 
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &AuthWindow::onCurrentChanged);
 }
@@ -270,26 +276,54 @@ void AuthWindow::returnToLastPage() {
 }
 
 void AuthWindow::onLoginResponse(bool success, const QString &message) {
-    goToWaitPage(WaitWidget::Type::Logining);
     if (success) {
         qDebug() << "Login successful:" << message;
         // 处理登录成功逻辑
-
+        AuthHintDialog dialog(this);
+        dialog.setHint(message);
+        connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
+            mNetworkManager->disconnect();
+            returnToLastPage();
+            dialog.close();
+        });
+        dialog.exec();
     } else {
         qDebug() << "Login failed:" << message;
         // 处理登录失败逻辑
+        AuthHintDialog dialog;
+        dialog.setHint(message);
+        connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
+            mNetworkManager->disconnect();
+            returnToLastPage();
+            dialog.close();
+        });
+        dialog.exec();
     }
 }
 
 void AuthWindow::onRegisterResponse(bool success, const QString &message) {
-    goToWaitPage(WaitWidget::Type::Registration);
     if (success) {
         qDebug() << "Register successful:" << message;
         // 处理注册成功逻辑
-
+        AuthHintDialog dialog;
+        dialog.setHint(message);
+        connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
+            mNetworkManager->disconnect();
+            returnToLastPage();
+            dialog.close();
+        });
+        dialog.exec();
     } else {
         qDebug() << "Register failed:" << message;
         // 处理注册失败逻辑
+        AuthHintDialog dialog;
+        dialog.setHint(message);
+        connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
+            mNetworkManager->disconnect();
+            returnToLastPage();
+            dialog.close();
+        });
+        dialog.exec();
     }
 }
 

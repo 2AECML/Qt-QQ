@@ -14,7 +14,7 @@ public:
     enum class Type {Registration, Logining};
 
     explicit WaitWidget(QWidget *parent = nullptr);
-    ~WaitWidget();    
+    ~WaitWidget();
 
     void setType(const Type type);
 

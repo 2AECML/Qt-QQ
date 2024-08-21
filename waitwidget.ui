@@ -208,6 +208,9 @@
           <property name="text">
            <string>取消</string>
           </property>
+          <property name="shortcut">
+           <string>Esc</string>
+          </property>
           <property name="flat">
            <bool>false</bool>
           </property>

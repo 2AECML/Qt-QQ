@@ -35,6 +35,7 @@ bool AuthNetworkManager::isConnected() const {
 
 void AuthNetworkManager::disconnect() {
     if (mTcpSocket->state() == QAbstractSocket::ConnectedState) {
+        qDebug() << "Disconnected from server";
         mTcpSocket->write("CLOSE");
         mTcpSocket->waitForBytesWritten();
         mTcpSocket->close();
@@ -48,11 +49,11 @@ void AuthNetworkManager::onReadyRead() {
 
     if (json["type"] == "login") {
         emit loginResponse(json["success"].toBool(), json["message"].toString());
-        qDebug() << json["message"].toString();
+        // qDebug() << json["message"].toString();
     }
     else if (json["type"] == "register") {
         emit registerResponse(json["success"].toBool(), json["message"].toString());
-        qDebug() << json["message"].toString();
+        // qDebug() << json["message"].toString();
     }
 }
 
@@ -94,5 +95,5 @@ void AuthNetworkManager::sendRequest(const QJsonObject& jsonData) {
 }
 
 void AuthNetworkManager::connectToServer() {
-    mTcpSocket->connectToHost("192.168.124.129", 8052);
+    mTcpSocket->connectToHost("113.45.223.108", 8052);
 }

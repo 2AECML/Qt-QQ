@@ -1,3 +1,7 @@
+# ***
+set(CMAKE_PREFIX_PATH "D:/Qt/6.7.2/mingw_64") 
+# ***
+
 cmake_minimum_required(VERSION 3.16)
 
 project(QQ VERSION 0.1 LANGUAGES CXX)
@@ -30,6 +34,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         loginwidget.h loginwidget.cpp loginwidget.ui
         registerwidget.h registerwidget.cpp registerwidget.ui
         waitwidget.h waitwidget.cpp waitwidget.ui
+        authhintdialog.h authhintdialog.cpp authhintdialog.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QQ APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
