@@ -28,6 +28,7 @@ private:
 private slots:
     void onCloseBtnClicked();
     void onMinimizeBtnClicked();
+    void onSearchInputEdited(const QString& inputText);
 
 private:
     Ui::HomeWindow *ui;

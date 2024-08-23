@@ -13,6 +13,8 @@ class UserListItem : public QWidget {
 public:
     UserListItem(const QString &nickname, const QString &id, QWidget* parent = nullptr);
     ~UserListItem();
+    QString getId() const;
+    QString getNickname() const;
 
 private:
     Ui::UserListItem *ui;

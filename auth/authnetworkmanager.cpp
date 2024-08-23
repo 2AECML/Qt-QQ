@@ -4,7 +4,7 @@
 AuthNetworkManager::AuthNetworkManager(QObject *parent)
     : QObject(parent)
     , mTcpSocket(new QTcpSocket(this))
-    , mHostName("113.45.223.108")
+    , mHostName("192.168.124.129")
     , mPort(8052) {
     connect(mTcpSocket, &QTcpSocket::readyRead, this, &AuthNetworkManager::onReadyRead);
     connect(mTcpSocket, &QTcpSocket::connected, this, &AuthNetworkManager::onConnected);

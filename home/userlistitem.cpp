@@ -12,3 +12,11 @@ UserListItem::UserListItem(const QString& nickname, const QString& id, QWidget* 
 UserListItem::~UserListItem() {
     delete ui;
 }
+
+QString UserListItem::getId() const {
+    return ui->id->text();
+}
+
+QString UserListItem::getNickname() const {
+    return ui->nickname->text();
+}

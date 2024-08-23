@@ -15,6 +15,7 @@ public:
 
 private:
     void sendRequest(const QJsonObject& jsonData);
+    void sendRequest(const QByteArray& data);
     void connectToServer();
 
 private slots:
@@ -30,6 +31,7 @@ private:
 signals:
     void userListResponse(const QJsonArray& list);
     void userListItemResponse(const QString& id, const QString& nickname);
+    void selfInfoResponse(const QString& id, const QString& nickname);
 };
 
 #endif // HOMENETWORKMANAGER_H

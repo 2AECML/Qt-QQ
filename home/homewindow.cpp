@@ -12,7 +12,7 @@ HomeWindow::HomeWindow(const QString &accountID, QWidget *parent)
 
     ui->setupUi(this);
 
-    // loadSelfInfo(accountID);
+    loadSelfInfo(accountID);
 
     loadList();
 
@@ -51,10 +51,18 @@ void HomeWindow::setupConnection() {
 
     connect(ui->minimizeBtn, &QToolButton::clicked, this, &HomeWindow::onMinimizeBtnClicked);
 
+    connect(ui->searchInput, &QLineEdit::textEdited, this, &HomeWindow::onSearchInputEdited);
+
 }
 
 void HomeWindow::loadSelfInfo(const QString &accountID) {
     mNetworkManager->sendUserInfoRequest(accountID);
+
+    connect(mNetworkManager, &HomeNetworkManager::selfInfoResponse, this,
+            [this](const QString& id, const QString& nickname) {
+        ui->nickname->setText(nickname);
+        ui->userID->setText(id);
+    });
 }
 
 void HomeWindow::loadList() {
@@ -98,4 +106,32 @@ void HomeWindow::onMinimizeBtnClicked() {
         this->setWindowOpacity(1.0); // 恢复透明度
     });
     animation->start(QPropertyAnimation::DeleteWhenStopped);
+}
+
+void HomeWindow::onSearchInputEdited(const QString& inputText) {
+    for (int i = 0; i < ui->userList->count(); ++i) {
+
+        QListWidgetItem *listItem = ui->userList->item(i);
+
+        QWidget* widget = ui->userList->itemWidget(listItem);
+
+        UserListItem* userItem = qobject_cast<UserListItem*>(widget);
+
+        if (userItem) {
+            // 使用 UserListItem 对象进行操作
+            QString id = userItem->getId();
+            QString nickname = userItem->getNickname();
+
+            // 进行匹配
+            if (nickname.contains(inputText, Qt::CaseInsensitive) ||
+                id.contains(inputText, Qt::CaseInsensitive)) {
+                // 显示匹配到的项
+                listItem->setHidden(false);
+            }
+            else {
+                // 隐藏不匹配的项
+                listItem->setHidden(true);
+            }
+        }
+    }
 }
