@@ -1,0 +1,131 @@
+/* 窗口整体样式 */
+QWidget#HomeWindow {
+    background-color: #f0f0f0; /* 背景色 */
+    border-radius: 10px; /* 圆角 */
+    border: 1px solid #ccc; /* 边框 */
+    border-radius: 5px; /* 圆角 */
+}
+
+/* 标题栏样式 */
+QWidget#titleBar {
+    background-color: #f0f0f0; /* 背景 */
+    height: 40px; /* 高度 */
+    border-bottom: 1px solid #f0f0f0; /* 边框颜色略深 */
+    border-top-left-radius: 5px; /* 左上角圆角 */
+    border-top-right-radius: 5px; /* 右上角圆角 */
+}
+
+/* QToolButton 样式 */
+QToolButton {
+    background: transparent;
+    border: none;
+    padding: 5px;
+}
+
+QToolButton#closeBtn {
+    border-top-right-radius: 5px;
+}
+
+QToolButton:hover {
+    background-color: #1296db; /* 悬停背景色 */
+}
+
+QToolButton:pressed {
+    background-color: #0f86c7; /* 按下背景色 */
+}
+
+/* QLineEdit 样式 */
+QLineEdit#searchInput {
+    padding: 5px;
+    border: 1px solid #aaa; /* 边框 */
+    border-radius: 5px; /* 圆角 */
+    background-color: #fff; /* 背景色 */
+    font-size: 14px;
+}
+
+/* QListWidget 样式 */
+QListWidget#userList {
+    background-color: #fff; /* 背景色 */
+    border: 1px solid #ddd; /* 边框 */
+    border-radius: 5px; /* 圆角 */
+    outline: none; /* 去掉虚线 */
+}
+
+QListWidget::item {
+    padding: 5px; /* 项目间距 */
+}
+
+/* 鼠标悬停效果 */
+QListWidget::item:hover {
+    background-color: #eeeeee; /* 鼠标悬停时背景颜色 */
+}
+
+QListWidget:item:selected {
+    background-color: #d5d5d5; /* 选中项背景色 */
+}
+
+/* UserListItem 样式 */
+UserListItem {
+    background-color: #f5f5f5; /* 设置背景颜色 */
+    border: 1px solid #dcdcdc; /* 设置边框颜色 */
+    border-radius: 5px; /* 设置圆角边框 */
+    padding: 5px; /* 内边距 */
+}
+
+/* QLabel 样式 */
+UserListItem QLabel {
+    color: #333; /* 设置字体颜色 */
+}
+
+/* QLabel 中的昵称 */
+UserListItem QLabel#nickname {
+    margin-bottom: 5px; /* 下边距 */
+}
+
+/* QLabel 中的账号 */
+UserListItem QLabel#id {
+    color: #666; /* 字体颜色 */
+}
+
+/* QLabel 中的图标 */
+UserListItem QLabel#icon {
+    border-radius: 30px; /* 设置圆形图标 */
+    border: 1px solid #ccc; /* 设置图标边框 */
+}
+
+/* QHBoxLayout 内的控件 */
+UserListItem QWidget#widget_2 {
+    margin-right: 10px; /* 右边距 */
+}
+
+UserListItem QWidget#widget {
+    padding-left: 10px; /* 左内边距 */
+}
+
+/* Scrollbar 样式 */
+QScrollBar:vertical {
+    width: 10px;            /* 滚动条宽度 */
+    border-radius: 5px;     /* 圆角 */
+}
+
+QScrollBar::handle:vertical {
+    background: #ccc;   /* 滚动条颜色 */
+    min-height: 20px;       /* 最小高度 */
+    border-radius: 5px;     /* 圆角 */
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #1296db; /* 悬停颜色 */
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    width: 0;               /* 隐藏上下控制按钮 */
+    height: 0;
+    background: none;       /* 确保无背景 */
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;       /* 不显示上下空白区域 */
+}

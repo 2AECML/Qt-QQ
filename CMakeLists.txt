@@ -1,6 +1,3 @@
-# ***
-set(CMAKE_PREFIX_PATH "D:/Qt/6.7.2/mingw_64") 
-# ***
 
 cmake_minimum_required(VERSION 3.16)
 
@@ -13,28 +10,23 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Sql Network)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql Network)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
+
+add_subdirectory(auth)
+add_subdirectory(custom_widgets)
+add_subdirectory(home)
 
 set(PROJECT_SOURCES
         main.cpp
-        authwindow.cpp
-        authwindow.h
-        authwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QQ
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        images.qrc
-        qss.qrc
-        inputvalidator.h inputvalidator.cpp
-        authnetworkmanager.h authnetworkmanager.cpp
-        loginwidget.h loginwidget.cpp loginwidget.ui
-        registerwidget.h registerwidget.cpp registerwidget.ui
-        waitwidget.h waitwidget.cpp waitwidget.ui
-        authhintdialog.h authhintdialog.cpp authhintdialog.ui
+        resources/resources.qrc
+        windowmanager.h windowmanager.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QQ APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -54,7 +46,12 @@ else()
     endif()
 endif()
 
-target_link_libraries(QQ PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::Network)
+target_link_libraries(QQ PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Network
+    auth
+    custom_widgets
+    home)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

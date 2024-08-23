@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>auth.qss</file>
+        <file>auth_dialog.qss</file>
+        <file>close.svg</file>
+        <file>hint.svg</file>
+        <file>minimization.svg</file>
+        <file>QQ.svg</file>
+        <file>setting.svg</file>
+        <file>copy.svg</file>
+        <file>success.svg</file>
+        <file>home.qss</file>
+        <file>cloud.svg</file>
+    </qresource>
+</RCC>

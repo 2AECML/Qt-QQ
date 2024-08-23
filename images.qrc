@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>images/close.svg</file>
-        <file>images/minimization.svg</file>
-        <file>images/setting.svg</file>
-        <file>images/QQ.svg</file>
-        <file>images/hint.svg</file>
-    </qresource>
-</RCC>

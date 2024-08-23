@@ -22,11 +22,6 @@ public:
 
     void disconnect();
 
-signals:
-    void loginResponse(bool success, const QString& message);
-
-    void registerResponse(bool success, const QString& message);
-
 private slots:
     void onReadyRead();
 
@@ -35,11 +30,19 @@ private slots:
     void onErrorOccurred(QAbstractSocket::SocketError socketError);
 
 private:
-    QTcpSocket* mTcpSocket;
-
     void sendRequest(const QJsonObject& jsonData);
 
     void connectToServer();
+
+signals:
+    void loginResponse(bool success, const QString& message, const QString& accountID);
+
+    void registerResponse(bool success, const QString& message, const QString& accountID);
+
+private:
+    QTcpSocket* mTcpSocket;
+    QString mHostName;
+    qint16 mPort;
 
 };
 

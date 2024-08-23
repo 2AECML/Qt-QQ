@@ -125,7 +125,7 @@
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="images.qrc">:/images/QQ.svg</pixmap>
+           <pixmap>:/QQ.svg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -384,8 +384,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="images.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

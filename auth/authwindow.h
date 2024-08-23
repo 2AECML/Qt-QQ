@@ -5,6 +5,7 @@
 #include "loginwidget.h"
 #include "registerwidget.h"
 #include "waitwidget.h"
+#include "../custom_widgets/customwidget.h"
 #include <QWidget>
 #include <QMouseEvent>
 #include <QCloseEvent>
@@ -18,8 +19,7 @@ class AuthWindow;
 }
 QT_END_NAMESPACE
 
-class AuthWindow : public QWidget
-{
+class AuthWindow : public CustomWidget {
     Q_OBJECT
 
 public:
@@ -27,13 +27,7 @@ public:
     ~AuthWindow();
 
 protected:
-    void mousePressEvent(QMouseEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent* event) override;
-    bool eventFilter(QObject *obj, QEvent *event) override;
-    void paintEvent(QPaintEvent* event) override;
     void closeEvent(QCloseEvent* event) override;
-    void installEventFilters();
     void loadStyle();
 
 private:
@@ -50,16 +44,12 @@ private slots:
     void goToLoginPage();
     void goToWaitPage(WaitWidget::Type waitType);
     void returnToLastPage();
-    void onLoginResponse(bool success, const QString& message);
-    void onRegisterResponse(bool success, const QString& message);
+    void onLoginResponse(bool success, const QString& message, const QString &accountID);
+    void onRegisterResponse(bool success, const QString& message, const QString& accountID);
     void onCurrentChanged(int index);
 
 private:
     Ui::AuthWindow *ui;
-
-    QPoint mDragPosition;
-
-    bool mDragEnabled = true;
 
     LoginWidget* mLoginPage;
 
@@ -70,6 +60,10 @@ private:
     int mLastPageIndex;
 
     AuthNetworkManager* mNetworkManager;
+
+signals:
+    void closed();
+    void loginSuccessful(const QString& accountID);
 };
 
 

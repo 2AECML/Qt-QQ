@@ -14,8 +14,8 @@
    <string>提示</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/images/hint.svg</normaloff>:/images/hint.svg</iconset>
+   <iconset resource="../resources/resources.qrc">
+    <normaloff>:/hint.svg</normaloff>:/hint.svg</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -42,6 +42,32 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="copyBtn">
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../resources/resources.qrc">
+         <normaloff>:/copy.svg</normaloff>:/copy.svg</iconset>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+C</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -128,6 +154,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

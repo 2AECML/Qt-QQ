@@ -1,7 +1,11 @@
 #include "authnetworkmanager.h"
 #include <QByteArray>
 
-AuthNetworkManager::AuthNetworkManager(QObject *parent) : QObject(parent), mTcpSocket(new QTcpSocket(this)){
+AuthNetworkManager::AuthNetworkManager(QObject *parent)
+    : QObject(parent)
+    , mTcpSocket(new QTcpSocket(this))
+    , mHostName("113.45.223.108")
+    , mPort(8052) {
     connect(mTcpSocket, &QTcpSocket::readyRead, this, &AuthNetworkManager::onReadyRead);
     connect(mTcpSocket, &QTcpSocket::connected, this, &AuthNetworkManager::onConnected);
     connect(mTcpSocket, &QAbstractSocket::errorOccurred, this, &AuthNetworkManager::onErrorOccurred);
@@ -48,17 +52,17 @@ void AuthNetworkManager::onReadyRead() {
     QJsonObject json = doc.object();
 
     if (json["type"] == "login") {
-        emit loginResponse(json["success"].toBool(), json["message"].toString());
+        emit loginResponse(json["success"].toBool(), json["message"].toString(), json["id"].toString());
         // qDebug() << json["message"].toString();
     }
     else if (json["type"] == "register") {
-        emit registerResponse(json["success"].toBool(), json["message"].toString());
+        emit registerResponse(json["success"].toBool(), json["message"].toString(), json["id"].toString());
         // qDebug() << json["message"].toString();
     }
 }
 
 void AuthNetworkManager::onConnected() {
-    qDebug() << "Connected to server";
+    qDebug() << "Connected to authserver";
     qDebug() << "Server address:" << mTcpSocket->peerAddress().toString();
     qDebug() << "Server port:" << mTcpSocket->peerPort();
 }
@@ -95,5 +99,5 @@ void AuthNetworkManager::sendRequest(const QJsonObject& jsonData) {
 }
 
 void AuthNetworkManager::connectToServer() {
-    mTcpSocket->connectToHost("113.45.223.108", 8052);
+    mTcpSocket->connectToHost(mHostName, mPort);
 }

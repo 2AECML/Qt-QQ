@@ -12,7 +12,7 @@
 #include <QLabel>
 
 AuthWindow::AuthWindow(QWidget *parent)
-    : QWidget(parent)
+    : CustomWidget(parent)
     , ui(new Ui::AuthWindow())
     , mLoginPage(new LoginWidget(ui->stackedWidget))
     , mRegisterPage(new RegisterWidget(ui->stackedWidget))
@@ -21,76 +21,16 @@ AuthWindow::AuthWindow(QWidget *parent)
 
     ui->setupUi(this);
 
-    setWindowFlag(Qt::FramelessWindowHint);
-
-    setAttribute(Qt::WA_TranslucentBackground);
-
     initPages();
 
     setupConnection();
-
-    installEventFilters();
 
     loadStyle();
 }
 
 AuthWindow::~AuthWindow() {
     delete ui;
-}
-
-void AuthWindow::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        if (mDragEnabled) {
-            mDragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
-        }
-        event->accept();
-    } else {
-        QWidget::mousePressEvent(event); // 调用基类处理其他按键事件
-    }
-}
-
-void AuthWindow::mouseMoveEvent(QMouseEvent *event) {
-    if (event->buttons() & Qt::LeftButton && mDragEnabled) {
-        QPoint newPos = event->globalPosition().toPoint() - mDragPosition;
-        move(newPos);
-        event->accept();
-    } else {
-        QWidget::mouseMoveEvent(event); // 调用基类处理其他移动事件
-    }
-}
-
-void AuthWindow::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        mDragEnabled = true; // 鼠标释放，重新启用拖动
-        event->accept();
-    } else {
-        QWidget::mouseReleaseEvent(event); // 调用基类处理其他释放事件
-    }
-}
-
-bool AuthWindow::eventFilter(QObject *obj, QEvent *event) {
-    // 获取按钮
-    QAbstractButton* button = qobject_cast<QAbstractButton*>(obj);
-
-    if (event->type() == QEvent::MouseButtonPress) {
-        if (button) {
-            mDragEnabled = false; // 点击按钮，禁用拖动
-        }
-    }
-    else if (event->type() == QEvent::MouseButtonRelease) {
-        if (button) {
-            mDragEnabled = true;
-        }
-    }
-    // 继续事件处理链
-    return QWidget::eventFilter(obj, event);
-}
-
-void AuthWindow::paintEvent(QPaintEvent *event) {
-    QStyleOption opt;
-    opt.initFrom(this);
-    QPainter painter(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+    qDebug() << "deleted AuthWindow";
 }
 
 void AuthWindow::closeEvent(QCloseEvent *event) {
@@ -100,19 +40,13 @@ void AuthWindow::closeEvent(QCloseEvent *event) {
     }
 
     event->accept();
-}
 
-void AuthWindow::installEventFilters() {
-    // 遍历 UI 中的所有按钮并安装事件过滤器
-    QList<QAbstractButton*> buttons = this->findChildren<QAbstractButton*>();
-    for (QAbstractButton* button : buttons) {
-        button->installEventFilter(this);
-    }
+    emit closed();
 }
 
 void AuthWindow::loadStyle() {
     // 加载 QSS 文件
-    QFile file(":/qss/auth.qss");
+    QFile file(":/auth.qss");
     if (file.open(QFile::ReadOnly)) {
         QString styleSheet = file.readAll();
         this->setStyleSheet(styleSheet);
@@ -146,8 +80,6 @@ void AuthWindow::setupConnection() {
         mNetworkManager->disconnect();
         returnToLastPage();
     });
-
-    // connect()
 
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this, &AuthWindow::onCurrentChanged);
 }
@@ -275,18 +207,14 @@ void AuthWindow::returnToLastPage() {
     ui->stackedWidget->setCurrentIndex(mLastPageIndex);
 }
 
-void AuthWindow::onLoginResponse(bool success, const QString &message) {
+void AuthWindow::onLoginResponse(bool success, const QString &message, const QString& accountID) {
     if (success) {
         qDebug() << "Login successful:" << message;
         // 处理登录成功逻辑
         AuthHintDialog dialog(this);
-        dialog.setHint(message);
-        connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
-            mNetworkManager->disconnect();
-            returnToLastPage();
-            dialog.close();
-        });
-        dialog.exec();
+        dialog.setHint(message); 
+        emit loginSuccessful(accountID);
+        this->close();
     } else {
         qDebug() << "Login failed:" << message;
         // 处理登录失败逻辑
@@ -294,23 +222,23 @@ void AuthWindow::onLoginResponse(bool success, const QString &message) {
         dialog.setHint(message);
         connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
             mNetworkManager->disconnect();
-            returnToLastPage();
             dialog.close();
+            returnToLastPage();
         });
         dialog.exec();
     }
 }
 
-void AuthWindow::onRegisterResponse(bool success, const QString &message) {
+void AuthWindow::onRegisterResponse(bool success, const QString& message, const QString& accountID) {
     if (success) {
         qDebug() << "Register successful:" << message;
         // 处理注册成功逻辑
         AuthHintDialog dialog;
-        dialog.setHint(message);
+        dialog.setHint(message, accountID);
         connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
             mNetworkManager->disconnect();
-            returnToLastPage();
             dialog.close();
+            returnToLastPage();
         });
         dialog.exec();
     } else {
@@ -320,8 +248,8 @@ void AuthWindow::onRegisterResponse(bool success, const QString &message) {
         dialog.setHint(message);
         connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
             mNetworkManager->disconnect();
-            returnToLastPage();
             dialog.close();
+            returnToLastPage();
         });
         dialog.exec();
     }

@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>qss/auth.qss</file>
-        <file>qss/auth_dialog.qss</file>
-    </qresource>
-</RCC>
