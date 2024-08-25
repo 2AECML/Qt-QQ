@@ -33,7 +33,7 @@ QToolButton#closeBtn:hover {
 }
 
 /* Chat Display Area */
-QTextEdit#textShowEdit {
+QTextEdit#textShowList {
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     padding: 10px;
@@ -69,7 +69,7 @@ QToolButton#fontBtn:hover {
 /* Input Area */
 QTextEdit#textEditArea {
     background-color: #ffffff;
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
     border-bottom: none;
     padding: 5px;
     font-size: 18px;

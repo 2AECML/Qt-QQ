@@ -14,14 +14,14 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 set(SOURCES
     chatwindow.cpp
     emoticonpanel.cpp
-    chatbubble.cpp
+
 )
 
 set(HEADERS
     chatwindow.h
     emoticonpanel.h
     chatmessage.h
-    chatbubble.h
+
 )
 
 set(FORMS
@@ -37,6 +37,7 @@ qt_add_library(chat STATIC
     ${HEADERS}
     ${FORMS}
     ${RESOURCES}
+    chatmessagewidget.h chatmessagewidget.cpp
 )
 
 target_link_libraries(chat custom_widgets Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network)

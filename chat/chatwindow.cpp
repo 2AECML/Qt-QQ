@@ -1,6 +1,7 @@
 #include "chatwindow.h"
 #include "ui_chatwindow.h"
 #include "emoticonpanel.h"
+#include "chatmessagewidget.h"
 #include <QFile>
 #include <QIcon>
 #include <QCursor>
@@ -96,21 +97,12 @@ void ChatWindow::setupConnection() {
     });
 
     connect(ui->sendBtn, &QPushButton::clicked, this, [this]() {
-        QString html = ui->textEditArea->toHtml();
-
-        // 正则表达式匹配 <p> 标签及其内容
-        QRegularExpression re("<p[^>]*>.*?</p>");
-        QRegularExpressionMatch match = re.match(html);
-
-        QString pTag;
-        if (match.hasMatch()) {
-            pTag = match.captured(0); // 提取完整的 <p> 标签及其内容
-            qDebug() << "Extracted <p> tag with content:" << pTag;
-        } else {
-            qDebug() << "No <p> tag found.";
+        QString message = ui->textEditArea->toPlainText();
+        if (message.isEmpty()) {
+            return;
         }
 
-        sendMessage(pTag);
+        sendMessage(message);
         ui->textEditArea->clear();
     });
 }
@@ -124,41 +116,26 @@ void ChatWindow::loadStyle() {
     }
 }
 
-void ChatWindow::sendMessage(const QString& htmlMessage) {
-    ChatMessage message;
-    message.senderID = mSelfID;
-    message.receiverID = mOtherID;
-    message.content = htmlMessage;
-    message.timestamp = QDateTime::currentDateTime();
+void ChatWindow::sendMessage(const QString& message) {
+    ChatMessage chatMessage;
+    chatMessage.senderID = mSelfID;
+    chatMessage.receiverID = mOtherID;
+    chatMessage.content = message;
+    chatMessage.timestamp = QDateTime::currentDateTime();
 
-    appendMessageToChat(message);
+    appendMessageToChat(chatMessage);
 }
 
-void ChatWindow::appendMessageToChat(const ChatMessage& htmlMessage) {
+void ChatWindow::appendMessageToChat(const ChatMessage& chatMessage) {
+    ChatMessageWidget* messageWidget = new ChatMessageWidget(ui->textShowList);
 
-    // 格式化消息内容
-    QString formattedMessage;
+    messageWidget->setFixedWidth(this->width());
+    QSize size = messageWidget->fontRect(chatMessage.content);
 
-    // 添加发送者信息和时间
-    QString senderInfo = QString("<b style='color: #007bff;'>%1:</b> ")
-                             .arg(htmlMessage.senderID); // 根据需要更改格式
+    QListWidgetItem* item = new QListWidgetItem(ui->textShowList);
+    item->setSizeHint(size);
 
-    QString timestamp = QString("<i>[%1]</i>")
-                            .arg(htmlMessage.timestamp.toString("MM-dd hh:mm")); // 时间戳格式化
+    messageWidget->setText(chatMessage.content, chatMessage.timestamp.toString(), size, ChatMessageWidget::Self);
 
-    // 构造完整消息
-    formattedMessage = QString(R"(<div style='background-color: #f0f0f0; padding: 10px; margin-bottom: 5px; border-radius: 5px;'>
-                               <b style='color: #007bff;'>%1:</b> <i>[%2]</i><br>%3
-                               </div>)")
-                           .arg(senderInfo, timestamp, htmlMessage.content);
-
-    // qDebug() << formattedMessage;
-
-    // 将格式化后的消息插入到聊天显示区域
-    ui->textShowEdit->append(formattedMessage);
-
-    qDebug() << ui->textShowEdit->toHtml();
-
-    // 确保滚动条到达消息底部
-    ui->textShowEdit->moveCursor(QTextCursor::End);
+    ui->textShowList->setItemWidget(item, messageWidget);
 }
