@@ -8,13 +8,14 @@
 HomeWindow::HomeWindow(const QString &accountID, QWidget *parent)
     : CustomWidget(parent)
     , ui(new Ui::HomeWindow)
-    , mNetworkManager(new HomeNetworkManager(this)){
+    , mNetworkManager(new HomeNetworkManager(this))
+    , mSelfID(accountID){
 
     ui->setupUi(this);
 
-    loadSelfInfo(accountID);
+    loadSelfInfo(mSelfID);
 
-    loadList();
+    loadList(mSelfID);
 
     setupConnection();
 
@@ -53,6 +54,7 @@ void HomeWindow::setupConnection() {
 
     connect(ui->searchInput, &QLineEdit::textEdited, this, &HomeWindow::onSearchInputEdited);
 
+    connect(ui->userList, &QListWidget::itemDoubleClicked, this, &HomeWindow::onListItemDoubleClicked);
 }
 
 void HomeWindow::loadSelfInfo(const QString &accountID) {
@@ -65,11 +67,16 @@ void HomeWindow::loadSelfInfo(const QString &accountID) {
     });
 }
 
-void HomeWindow::loadList() {
+void HomeWindow::loadList(const QString &accountID) {
     mNetworkManager->sendUserListRequest();
 
     connect(mNetworkManager, &HomeNetworkManager::userListItemResponse, this,
-            [this](const QString& id, const QString& nickname) {
+        [this, accountID](const QString& id, const QString& nickname) {
+
+        if (id == accountID) {
+            return;
+        }
+
         QWidget* infoWidget = new UserListItem(nickname, id, ui->userList);
 
         QListWidgetItem* listItem = new QListWidgetItem(ui->userList);
@@ -111,7 +118,7 @@ void HomeWindow::onMinimizeBtnClicked() {
 void HomeWindow::onSearchInputEdited(const QString& inputText) {
     for (int i = 0; i < ui->userList->count(); ++i) {
 
-        QListWidgetItem *listItem = ui->userList->item(i);
+        QListWidgetItem* listItem = ui->userList->item(i);
 
         QWidget* widget = ui->userList->itemWidget(listItem);
 
@@ -134,4 +141,20 @@ void HomeWindow::onSearchInputEdited(const QString& inputText) {
             }
         }
     }
+}
+
+void HomeWindow::onListItemDoubleClicked(QListWidgetItem* item) {
+    QString otherID;
+
+    QWidget* widget = ui->userList->itemWidget(item);
+    UserListItem* userItem = qobject_cast<UserListItem*>(widget);
+
+    if (userItem) {
+        otherID = userItem->getId();
+    }
+    else {
+        return;
+    }
+
+    emit chatWindowRequested(mSelfID, otherID);
 }

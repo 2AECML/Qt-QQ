@@ -12,31 +12,31 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 
 set(SOURCES
-    homewindow.cpp
-    homenetworkmanager.cpp
-    userlistitem.cpp
+    chatwindow.cpp
+    emoticonpanel.cpp
+    chatbubble.cpp
 )
 
 set(HEADERS
-    homewindow.h
-    homenetworkmanager.h
-    userlistitem.h
+    chatwindow.h
+    emoticonpanel.h
+    chatmessage.h
+    chatbubble.h
 )
 
 set(FORMS
-    homewindow.ui
-    userlistitem.ui
+    chatwindow.ui
 )
 
 set(RESOURCES
     ../resources/resources.qrc
 )
 
-qt_add_library(home STATIC
+qt_add_library(chat STATIC
     ${SOURCES}
     ${HEADERS}
     ${FORMS}
     ${RESOURCES}
 )
 
-target_link_libraries(home custom_widgets Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network)
+target_link_libraries(chat custom_widgets Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network)

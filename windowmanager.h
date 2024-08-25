@@ -4,6 +4,7 @@
 #include <QObject>
 #include "auth/authwindow.h"
 #include "home/homewindow.h"
+#include "chat/chatwindow.h"
 
 class WindowManager : public QObject {
     Q_OBJECT
@@ -13,6 +14,7 @@ public:
 private:
     AuthWindow* mAuthWindow;
     HomeWindow* mHomeWindow;
+    ChatWindow* mChatWindow;
 };
 
 #endif // WINDOWMANAGER_H

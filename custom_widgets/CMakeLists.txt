@@ -14,11 +14,13 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 set(SOURCES
     customdialog.cpp
     customwidget.cpp
+
 )
 
 set(HEADERS
     customdialog.h
     customwidget.h
+
 )
 
 qt_add_library(custom_widgets STATIC

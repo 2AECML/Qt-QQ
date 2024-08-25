@@ -6,9 +6,10 @@
 CustomWidget::CustomWidget(QWidget *parent)
     : QWidget(parent) {
 
-    setWindowFlag(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     setAttribute(Qt::WA_TranslucentBackground);
+
 }
 
 CustomWidget::~CustomWidget() {
@@ -16,7 +17,12 @@ CustomWidget::~CustomWidget() {
 }
 
 void CustomWidget::mousePressEvent(QMouseEvent* event) {
+
     if (event->button() == Qt::LeftButton) {
+        if (this->isMaximized()) {
+            return;
+        }
+
         if (mDragEnabled) {
             mDragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
         }
@@ -27,7 +33,12 @@ void CustomWidget::mousePressEvent(QMouseEvent* event) {
 }
 
 void CustomWidget::mouseMoveEvent(QMouseEvent* event) {
+
     if (event->buttons() & Qt::LeftButton && mDragEnabled) {
+        if (this->isMaximized()) {
+            return;
+        }
+
         QPoint newPos = event->globalPosition().toPoint() - mDragPosition;
         move(newPos);
         event->accept();
@@ -37,7 +48,12 @@ void CustomWidget::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void CustomWidget::mouseReleaseEvent(QMouseEvent* event) {
+
     if (event->button() == Qt::LeftButton) {
+        if (this->isMaximized()) {
+            return;
+        }
+
         mDragEnabled = true; // 鼠标释放，重新启用拖动
         event->accept();
     } else {

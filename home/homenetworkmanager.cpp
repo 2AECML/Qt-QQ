@@ -83,7 +83,6 @@ void HomeNetworkManager::onReadyRead() {
                 QString id = jsonObject["id"].toString();
                 QString nickname = jsonObject["nickname"].toString();
                 emit userListItemResponse(id, nickname);
-                qDebug() << id << nickname;
             }
         }
         else if (json["type"] == "user_info") {

@@ -11,5 +11,17 @@
         <file>success.svg</file>
         <file>home.qss</file>
         <file>cloud.svg</file>
+        <file>chat.qss</file>
+        <file>maximization.svg</file>
+        <file>maximization-cancel.svg</file>
+        <file>resources.qrc</file>
+        <file>emoticon.svg</file>
+        <file>file.svg</file>
+        <file>font.svg</file>
+        <file>image.svg</file>
+        <file>close-white.svg</file>
+        <file>maximization-cancel-white.svg</file>
+        <file>maximization-white.svg</file>
+        <file>minimization-white.svg</file>
     </qresource>
 </RCC>

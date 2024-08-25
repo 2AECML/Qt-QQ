@@ -14,8 +14,9 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 
 add_subdirectory(auth)
-add_subdirectory(custom_widgets)
 add_subdirectory(home)
+add_subdirectory(chat)
+add_subdirectory(custom_widgets)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -27,6 +28,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         resources/resources.qrc
         windowmanager.h windowmanager.cpp
+        resources/resources.qrc
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QQ APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -51,7 +53,8 @@ target_link_libraries(QQ PRIVATE
     Qt${QT_VERSION_MAJOR}::Network
     auth
     custom_widgets
-    home)
+    home
+    chat)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
