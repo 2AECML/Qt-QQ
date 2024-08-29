@@ -165,7 +165,7 @@ void ChatWindow::loadHistory() {
     QList<ChatMessage> chatList = mDatabaseManager->getChatHistory(mOtherID);
 
     for (auto& chatMessage : chatList) {
-        appendMessageToChat(chatMessage);
+        appendMessageToChat(chatMessage, true);
         qDebug() << "Load history: " << chatMessage.content;
     }
 }
@@ -189,7 +189,7 @@ void ChatWindow::sendMessage(const QString& message, const ChatMessage::Type typ
     mDatabaseManager->saveChatHistory(chatMessage);
 }
 
-void ChatWindow::appendMessageToChat(const ChatMessage& chatMessage) {
+void ChatWindow::appendMessageToChat(const ChatMessage& chatMessage, bool isHistory) {
 
     QDateTime curTime = chatMessage.timestamp;
 
@@ -220,6 +220,14 @@ void ChatWindow::appendMessageToChat(const ChatMessage& chatMessage) {
 
         if (chatMessage.senderID == mSelfID) {
             localImagePath = chatMessage.content;
+        }
+        else if (isHistory) {
+            // 提取文件名
+            QString fileName = QFileInfo(QUrl(chatMessage.content).path()).fileName();
+
+            // 获取完整的保存路径
+            localImagePath = QDir(mLocalImagePath).filePath(fileName);
+            qDebug() << "History locaoImagePath: " << localImagePath;
         }
         else {
             localImagePath = downloadImage(chatMessage.content);
@@ -283,13 +291,16 @@ void ChatWindow::appendMessageToChat(const ChatMessage& chatMessage) {
 
     // 将格式化后的消息插入到聊天显示区域
     if (ui->textShowArea->toPlainText().isEmpty()) {
-        ui->textShowArea->setHtml(timeInfo +formattedMessage);
+        ui->textShowArea->setHtml(timeInfo + formattedMessage);
     }
     else {
-        ui->textShowArea->setHtml(ui->textShowArea->toHtml() + timeInfo +formattedMessage);
+        ui->textShowArea->setHtml(ui->textShowArea->toHtml() + timeInfo + formattedMessage);
     }
 
     // qDebug() << ui->textShowArea->toHtml();
+
+    // 更新面板
+    ui->textShowArea->update();
 
     // 确保滚动条到达消息底部
     ui->textShowArea->moveCursor(QTextCursor::End);

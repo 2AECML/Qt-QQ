@@ -5,7 +5,7 @@
 #include <QJsonValue>
 
 HomeNetworkManager::HomeNetworkManager(QObject *parent)
-    : BasicTcpNetworkManager("192.168.124.129", 8053, parent) {
+    : BasicTcpNetworkManager("113.45.223.108", 8053, parent) {
 
 }
 

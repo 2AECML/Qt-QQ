@@ -3,7 +3,7 @@
 #include <QByteArray>
 
 AuthNetworkManager::AuthNetworkManager(QObject *parent)
-    : BasicTcpNetworkManager("192.168.124.129", 8052, parent) {
+    : BasicTcpNetworkManager("113.45.223.108", 8052, parent) {
 
 }
 

@@ -31,7 +31,7 @@ protected:
 private:
     void loadHistory();
     void sendMessage(const QString& message, const ChatMessage::Type type = ChatMessage::Text);
-    void appendMessageToChat(const ChatMessage& message);
+    void appendMessageToChat(const ChatMessage& message, bool isHistory = false);
     QString downloadImage(const QString &urlString);
 
 private:

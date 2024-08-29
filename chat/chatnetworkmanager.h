@@ -1,7 +1,7 @@
 #ifndef CHATNETWORKMANAGER_H
 #define CHATNETWORKMANAGER_H
 
-#define CHUNK_SIZE 65536 // 64KB
+#define CHUNK_SIZE 262144 // 256KB
 
 #include "chatmessage.h"
 #include "../custom_widgets/basicwebnetworkmanager.h"

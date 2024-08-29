@@ -7,7 +7,7 @@
 
 ChatNetworkManager::ChatNetworkManager(const QString& selfID, QObject *parent)
     : mSelfID(selfID)
-    , BasicWebNetworkManager(QUrl("ws://192.168.124.129:8080") , parent) {
+    , BasicWebNetworkManager(QUrl("ws://113.45.223.108:8080") , parent) {
     connectToServer();
 
     connect(mWebSocket, &QWebSocket::connected, this, &ChatNetworkManager::sendSelfID);
