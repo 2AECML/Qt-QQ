@@ -6,10 +6,10 @@
 #include <QScrollBar>
 
 HomeWindow::HomeWindow(const QString &accountID, QWidget *parent)
-    : CustomWidget(parent)
+    : BasicWidget(parent)
     , ui(new Ui::HomeWindow)
     , mNetworkManager(new HomeNetworkManager(this))
-    , mSelfID(accountID){
+    , mSelfID(accountID) {
 
     ui->setupUi(this);
 
@@ -33,9 +33,9 @@ void HomeWindow::closeEvent(QCloseEvent* event) {
         mNetworkManager->disconnect();
     }
 
-    event->accept();
-
     emit closed();
+
+    event->accept();
 }
 
 void HomeWindow::loadStyle() {
@@ -74,6 +74,7 @@ void HomeWindow::loadList(const QString &accountID) {
         [this, accountID](const QString& id, const QString& nickname) {
 
         if (id == accountID) {
+            mSelfName = nickname;
             return;
         }
 
@@ -145,16 +146,14 @@ void HomeWindow::onSearchInputEdited(const QString& inputText) {
 
 void HomeWindow::onListItemDoubleClicked(QListWidgetItem* item) {
     QString otherID;
+    QString otherName;
 
     QWidget* widget = ui->userList->itemWidget(item);
     UserListItem* userItem = qobject_cast<UserListItem*>(widget);
 
     if (userItem) {
         otherID = userItem->getId();
+        otherName = userItem->getNickname();
+        emit chatWindowRequested(mSelfID, otherID, mSelfName, otherName);
     }
-    else {
-        return;
-    }
-
-    emit chatWindowRequested(mSelfID, otherID);
 }

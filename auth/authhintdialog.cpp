@@ -4,7 +4,7 @@
 #include <QClipboard>
 
 AuthHintDialog::AuthHintDialog(QWidget *parent)
-    : CustomDialog(parent)
+    : BasicDialog(parent)
     , ui(new Ui::AuthHintDialog) {
     ui->setupUi(this);
 

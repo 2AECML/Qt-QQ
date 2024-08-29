@@ -2,19 +2,16 @@
 #define WINDOWMANAGER_H
 
 #include <QObject>
-#include "auth/authwindow.h"
-#include "home/homewindow.h"
-#include "chat/chatwindow.h"
 
 class WindowManager : public QObject {
     Q_OBJECT
 public:
-    explicit WindowManager(QObject *parent = nullptr);
+    explicit WindowManager(QObject* parent = nullptr);
 
-private:
-    AuthWindow* mAuthWindow;
-    HomeWindow* mHomeWindow;
-    ChatWindow* mChatWindow;
+private slots:
+    void handleLoginSuccessful(const QString& accountID);
+
+    void handleChatWindowRequested(const QString& selfID, const QString& otherID, const QString& selfName, const QString& otherName);
 };
 
 #endif // WINDOWMANAGER_H

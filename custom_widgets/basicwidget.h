@@ -1,5 +1,5 @@
-#ifndef CUSTOMWIDGET_H
-#define CUSTOMWIDGET_H
+#ifndef BASICWIDGET_H
+#define BASICWIDGET_H
 
 #include <QWidget>
 #include <QMouseEvent>
@@ -9,13 +9,13 @@
 #include <QPoint>
 #include <QShowEvent>
 
-class CustomWidget : public QWidget
+class BasicWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit CustomWidget(QWidget *parent = nullptr);
-    ~CustomWidget();
+    explicit BasicWidget(QWidget *parent = nullptr);
+    ~BasicWidget();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -33,4 +33,4 @@ private:
     bool mDragEnabled = true;
 };
 
-#endif // CUSTOMWIDGET_H
+#endif // BASICWIDGET_H

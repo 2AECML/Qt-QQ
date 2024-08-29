@@ -1,28 +1,22 @@
-#include "customwidget.h"
+#include "basicdialog.h"
+#include <QAbstractButton>
 #include <QStyleOption>
 #include <QPainter>
-#include <QAbstractButton>
 
-CustomWidget::CustomWidget(QWidget *parent)
-    : QWidget(parent) {
+BasicDialog::BasicDialog(QWidget *parent)
+    : QDialog(parent) {
 
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    setWindowFlag(Qt::FramelessWindowHint);
 
     setAttribute(Qt::WA_TranslucentBackground);
+}
+
+BasicDialog::~BasicDialog() {
 
 }
 
-CustomWidget::~CustomWidget() {
-
-}
-
-void CustomWidget::mousePressEvent(QMouseEvent* event) {
-
+void BasicDialog::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
-        if (this->isMaximized()) {
-            return;
-        }
-
         if (mDragEnabled) {
             mDragPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
         }
@@ -32,13 +26,8 @@ void CustomWidget::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void CustomWidget::mouseMoveEvent(QMouseEvent* event) {
-
+void BasicDialog::mouseMoveEvent(QMouseEvent* event) {
     if (event->buttons() & Qt::LeftButton && mDragEnabled) {
-        if (this->isMaximized()) {
-            return;
-        }
-
         QPoint newPos = event->globalPosition().toPoint() - mDragPosition;
         move(newPos);
         event->accept();
@@ -47,13 +36,8 @@ void CustomWidget::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
-void CustomWidget::mouseReleaseEvent(QMouseEvent* event) {
-
+void BasicDialog::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
-        if (this->isMaximized()) {
-            return;
-        }
-
         mDragEnabled = true; // 鼠标释放，重新启用拖动
         event->accept();
     } else {
@@ -61,7 +45,7 @@ void CustomWidget::mouseReleaseEvent(QMouseEvent* event) {
     }
 }
 
-bool CustomWidget::eventFilter(QObject* obj, QEvent* event) {
+bool BasicDialog::eventFilter(QObject* obj, QEvent* event) {
     // 获取按钮
     QAbstractButton* button = qobject_cast<QAbstractButton*>(obj);
 
@@ -79,19 +63,19 @@ bool CustomWidget::eventFilter(QObject* obj, QEvent* event) {
     return QWidget::eventFilter(obj, event);
 }
 
-void CustomWidget::paintEvent(QPaintEvent* event) {
+void BasicDialog::paintEvent(QPaintEvent* event) {
     QStyleOption opt;
     opt.initFrom(this);
     QPainter painter(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 }
 
-void CustomWidget::showEvent(QShowEvent *event) {
+void BasicDialog::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
     installEventFilters();
 }
 
-void CustomWidget::installEventFilters() {
+void BasicDialog::installEventFilters() {
     // 遍历 UI 中的所有按钮并安装事件过滤器
     QList<QAbstractButton*> buttons = this->findChildren<QAbstractButton*>();
     for (QAbstractButton* button : buttons) {

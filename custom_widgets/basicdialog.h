@@ -1,5 +1,5 @@
-#ifndef CUSTOMDIALOG_H
-#define CUSTOMDIALOG_H
+#ifndef BASICDIALOG_H
+#define BASICDIALOG_H
 
 #include <QDialog>
 #include <QMouseEvent>
@@ -9,13 +9,13 @@
 #include <QShowEvent>
 #include <QString>
 
-class CustomDialog : public QDialog
+class BasicDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit CustomDialog(QWidget *parent = nullptr);
-    ~CustomDialog();
+    explicit BasicDialog(QWidget *parent = nullptr);
+    ~BasicDialog();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -34,4 +34,4 @@ private:
 
 };
 
-#endif // CUSTOMDIALOG_H
+#endif // BASICDIALOG_H

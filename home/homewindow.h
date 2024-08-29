@@ -1,7 +1,7 @@
 #ifndef HOMEWINDOW_H
 #define HOMEWINDOW_H
 
-#include "../custom_widgets/customwidget.h"
+#include "../custom_widgets/basicwidget.h"
 #include "homenetworkmanager.h"
 #include <QCloseEvent>
 #include <QListWidget>
@@ -10,7 +10,7 @@ namespace Ui {
 class HomeWindow;
 }
 
-class HomeWindow : public CustomWidget {
+class HomeWindow : public BasicWidget {
     Q_OBJECT
 
 public:
@@ -36,10 +36,11 @@ private:
     Ui::HomeWindow *ui;
     HomeNetworkManager* mNetworkManager;
     QString mSelfID;
+    QString mSelfName;
 
 signals:
     void closed();
-    void chatWindowRequested(const QString& selfID, const QString& otherID);
+    void chatWindowRequested(const QString& selfID, const QString& otherID, const QString& selfName, const QString& otherName);
 };
 
 #endif // HOMEWINDOW_H

@@ -12,7 +12,7 @@
 #include <QLabel>
 
 AuthWindow::AuthWindow(QWidget *parent)
-    : CustomWidget(parent)
+    : BasicWidget(parent)
     , ui(new Ui::AuthWindow())
     , mLoginPage(new LoginWidget(ui->stackedWidget))
     , mRegisterPage(new RegisterWidget(ui->stackedWidget))
@@ -36,12 +36,12 @@ AuthWindow::~AuthWindow() {
 void AuthWindow::closeEvent(QCloseEvent *event) {
     // 关闭网络连接
     if (mNetworkManager) {
-        mNetworkManager->disconnect();
+        mNetworkManager->disconnectFromServer();
     }
 
-    event->accept();
-
     emit closed();
+
+    event->accept();
 }
 
 void AuthWindow::loadStyle() {
@@ -77,7 +77,7 @@ void AuthWindow::setupConnection() {
     connect(mNetworkManager, &AuthNetworkManager::registerResponse, this, &AuthWindow::onRegisterResponse);
 
     connect(mWaitPage, &WaitWidget::cancelSignal, this, [this]() {
-        mNetworkManager->disconnect();
+        mNetworkManager->disconnectFromServer();
         returnToLastPage();
     });
 
@@ -221,7 +221,7 @@ void AuthWindow::onLoginResponse(bool success, const QString &message, const QSt
         AuthHintDialog dialog;
         dialog.setHint(message);
         connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
-            mNetworkManager->disconnect();
+            mNetworkManager->disconnectFromServer();
             dialog.close();
             returnToLastPage();
         });
@@ -236,7 +236,7 @@ void AuthWindow::onRegisterResponse(bool success, const QString& message, const 
         AuthHintDialog dialog;
         dialog.setHint(message, accountID);
         connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
-            mNetworkManager->disconnect();
+            mNetworkManager->disconnectFromServer();
             dialog.close();
             returnToLastPage();
         });
@@ -247,7 +247,7 @@ void AuthWindow::onRegisterResponse(bool success, const QString& message, const 
         AuthHintDialog dialog;
         dialog.setHint(message);
         connect(&dialog, &QDialog::finished, this, [this, &dialog]() {
-            mNetworkManager->disconnect();
+            mNetworkManager->disconnectFromServer();
             dialog.close();
             returnToLastPage();
         });

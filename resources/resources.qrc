@@ -23,5 +23,6 @@
         <file>maximization-cancel-white.svg</file>
         <file>maximization-white.svg</file>
         <file>minimization-white.svg</file>
+        <file>color.svg</file>
     </qresource>
 </RCC>

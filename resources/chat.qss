@@ -37,7 +37,6 @@ QTextEdit#textShowList {
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     padding: 10px;
-    font-size: 18px;
     color: #333;
 }
 
@@ -52,7 +51,8 @@ QWidget#toolBar {
 QToolButton#emoticonBtn,
 QToolButton#imageBtn,
 QToolButton#fileBtn,
-QToolButton#fontBtn {
+QToolButton#fontBtn,
+QToolButton#colorBtn {
     background-color: transparent;
     border: none;
     icon-size: 22px;
@@ -61,7 +61,8 @@ QToolButton#fontBtn {
 QToolButton#emoticonBtn:hover,
 QToolButton#imageBtn:hover,
 QToolButton#fileBtn:hover,
-QToolButton#fontBtn:hover {
+QToolButton#fontBtn:hover,
+QToolButton#colorBtn:hover {
     background-color: #f0f0f0;
     border-radius: 5px;
 }
@@ -72,7 +73,6 @@ QTextEdit#textEditArea {
     /* border: 1px solid #ddd; */
     border-bottom: none;
     padding: 5px;
-    font-size: 18px;
     color: #333;
 }
 
@@ -93,9 +93,37 @@ QPushButton#sendBtn {
 }
 
 QPushButton#sendBtn:hover {
-    background-color: #005a9e;
+    background-color: #4284db;
 }
 
 QPushButton#sendBtn:pressed {
-    background-color: #00508e;
+    background-color: #3179d6;
+}
+
+/* Scrollbar 样式 */
+QScrollBar:vertical {
+    width: 10px;            /* 滚动条宽度 */
+    border-radius: 5px;     /* 圆角 */
+}
+
+QScrollBar::handle:vertical {
+    background: #ccc;   /* 滚动条颜色 */
+    min-height: 20px;       /* 最小高度 */
+    border-radius: 5px;     /* 圆角 */
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #1296db; /* 悬停颜色 */
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    width: 0;               /* 隐藏上下控制按钮 */
+    height: 0;
+    background: none;       /* 确保无背景 */
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;       /* 不显示上下空白区域 */
 }

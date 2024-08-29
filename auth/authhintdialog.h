@@ -1,7 +1,7 @@
 #ifndef AUTHHINTDIALOG_H
 #define AUTHHINTDIALOG_H
 
-#include "../custom_widgets/customdialog.h"
+#include "../custom_widgets/basicdialog.h"
 #include <QDialog>
 #include <QString>
 
@@ -9,7 +9,7 @@ namespace Ui {
 class AuthHintDialog;
 }
 
-class AuthHintDialog : public CustomDialog {
+class AuthHintDialog : public BasicDialog {
     Q_OBJECT
 
 public:

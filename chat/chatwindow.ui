@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>500</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -237,9 +237,17 @@
     </widget>
    </item>
    <item>
-    <widget class="QListWidget" name="textShowList">
+    <widget class="QTextBrowser" name="textShowArea">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -326,6 +334,14 @@
           <width>22</width>
           <height>22</height>
          </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="colorBtn">
+        <property name="icon">
+         <iconset resource="../resources/resources.qrc">
+          <normaloff>:/color.svg</normaloff>:/color.svg</iconset>
         </property>
        </widget>
       </item>

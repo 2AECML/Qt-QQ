@@ -5,7 +5,7 @@
 #include "loginwidget.h"
 #include "registerwidget.h"
 #include "waitwidget.h"
-#include "../custom_widgets/customwidget.h"
+#include "../custom_widgets/basicwidget.h"
 #include <QWidget>
 #include <QMouseEvent>
 #include <QCloseEvent>
@@ -19,7 +19,7 @@ class AuthWindow;
 }
 QT_END_NAMESPACE
 
-class AuthWindow : public CustomWidget {
+class AuthWindow : public BasicWidget {
     Q_OBJECT
 
 public:
