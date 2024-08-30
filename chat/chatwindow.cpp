@@ -20,243 +20,252 @@
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
 
+// 构造函数，初始化聊天窗口及其组件
 ChatWindow::ChatWindow(const QString& selfID, const QString& otherID, const QString& selfName, const QString& otherName, QWidget* parent)
     : BasicWidget(parent)
-    , ui(new Ui::ChatWindow)
-    , mNetworkManager(new ChatNetworkManager(selfID, this))
-    , mDatabaseManager(new ChatDatabaseManager(selfID, this))
-    , mSelfID(selfID)
-    , mOtherID(otherID)
-    , mSelfName(selfName)
-    , mOtherName(otherName) {
+    , ui(new Ui::ChatWindow) // 初始化 UI 组件
+    , mNetworkManager(new ChatNetworkManager(selfID, this)) // 创建网络管理器实例
+    , mDatabaseManager(new ChatDatabaseManager(selfID, this)) // 创建数据库管理器实例
+    , mSelfID(selfID) // 保存自身 ID
+    , mOtherID(otherID) // 保存对方 ID
+    , mSelfName(selfName) // 保存自身名称
+    , mOtherName(otherName) { // 保存对方名称
 
-    ui->setupUi(this);
+    ui->setupUi(this); // 设置 UI
 
-    ui->nicknameLabel->setText(otherName);
+    ui->nicknameLabel->setText(otherName); // 设置对方名称标签
 
-    setupConnection();
+    setupConnection(); // 设置信号槽连接
 
-    loadStyle();
+    loadStyle(); // 加载样式表
 
-    loadHistory();
-
+    loadHistory(); // 加载聊天记录
 }
 
+// 析构函数，删除 UI 组件
 ChatWindow::~ChatWindow() {
     delete ui;
-    qDebug() << "deleted ChatWindow";
+    qDebug() << "deleted ChatWindow"; // 输出调试信息
 }
 
+// 设置信号槽连接
 void ChatWindow::setupConnection() {
+    // 最小化按钮的点击事件
     connect(ui->minimizeBtn, &QPushButton::clicked, this, [this]() {
-        this->showMinimized();
+        this->showMinimized(); // 最小化窗口
     });
 
+    // 最大化按钮的点击事件
     connect(ui->maxmizeBtn, &QPushButton::clicked, this, [this]() {
-        if (isMaximized()) {
+        if (isMaximized()) { // 如果窗口已经最大化
             showNormal(); // 恢复到正常状态
-            ui->maxmizeBtn->setIcon(QIcon(":/maximization-white.svg"));
+            ui->maxmizeBtn->setIcon(QIcon(":/maximization-white.svg")); // 设置最大化按钮的图标
         } else {
             showMaximized(); // 最大化窗口
-            ui->maxmizeBtn->setIcon(QIcon(":/maximization-cancel-white.svg"));
+            ui->maxmizeBtn->setIcon(QIcon(":/maximization-cancel-white.svg")); // 设置恢复按钮的图标
         }
     });
 
+    // 关闭按钮的点击事件
     connect(ui->closeBtn, &QPushButton::clicked, this, [this]() {
-        this->close();
+        this->close(); // 关闭窗口
     });
 
+    // 表情按钮的点击事件
     connect(ui->emoticonBtn, &QToolButton::clicked, this, [this]() {
-        EmoticonPanel* emoticonPanel = new EmoticonPanel(this);
+        EmoticonPanel* emoticonPanel = new EmoticonPanel(this); // 创建表情面板
         connect(emoticonPanel, &EmoticonPanel::emoticonSelected, this, [this](const QString &emoticon) {
-            QTextCursor cursor = ui->textEditArea->textCursor();
-            cursor.insertHtml(emoticon);
+            QTextCursor cursor = ui->textEditArea->textCursor(); // 获取文本光标
+            cursor.insertHtml(emoticon); // 插入选中的表情
         });
 
-        // 先调用 show() 显示面板
+        // 显示表情面板
         emoticonPanel->show();
 
         // 获取面板的大小和鼠标位置
         QSize panelSize = emoticonPanel->size();
         QPoint mousePos = QCursor::pos();
 
-        // 计算左下角的位置
+        // 计算面板的位置
         QPoint panelPos(mousePos.x(), mousePos.y() - panelSize.height());
 
         // 移动面板到计算的位置
         emoticonPanel->move(panelPos);
     });
 
+    // 图片按钮的点击事件
     connect(ui->imageBtn, &QToolButton::clicked, this, [this]() {
-        QString filePath = QFileDialog::getOpenFileName(this, "选择图片", "", "Images (*.png *.xpm *.jpg)");
+        QString filePath = QFileDialog::getOpenFileName(this, "选择图片", "", "Images (*.png *.xpm *.jpg)"); // 打开文件对话框选择图片
         if (!filePath.isEmpty()) {
-            sendMessage(filePath, ChatMessage::Image);
+            sendMessage(filePath, ChatMessage::Image); // 发送图片消息
         }
     });
 
+    // 文件按钮的点击事件
     connect(ui->fileBtn, &QToolButton::clicked, this, [this]() {
-        QString filePath = QFileDialog::getOpenFileName(this, "选择文件", "", "All Files (*)");
+        QString filePath = QFileDialog::getOpenFileName(this, "选择文件", "", "All Files (*)"); // 打开文件对话框选择文件
         if (!filePath.isEmpty()) {
-            sendMessage(filePath, ChatMessage::File);
+            sendMessage(filePath, ChatMessage::File); // 发送文件消息
         }
     });
 
+    // 字体按钮的点击事件
     connect(ui->fontBtn, &QToolButton::clicked, this, [this]() {
         bool ok;
-        QFont font = QFontDialog::getFont(&ok, ui->textEditArea->font(), this);
+        QFont font = QFontDialog::getFont(&ok, ui->textEditArea->font(), this); // 打开字体选择对话框
         if (ok) {
-            ui->textEditArea->setFont(font);
-            mFont = font;
+            ui->textEditArea->setFont(font); // 设置文本编辑区字体
+            mFont = font; // 保存字体
         }
     });
 
+    // 颜色按钮的点击事件
     connect(ui->colorBtn, &QToolButton::clicked, this, [this]() {
-        QColor color = QColorDialog::getColor();
+        QColor color = QColorDialog::getColor(); // 打开颜色选择对话框
 
         if (color.isValid()) {
             QTextCharFormat format;
-            format.setForeground(color);
+            format.setForeground(color); // 设置字体颜色
             QTextCursor cursor(ui->textEditArea->document());
             cursor.select(QTextCursor::Document);
-            cursor.mergeCharFormat(format);
-            ui->textEditArea->setTextCursor(cursor);
-            mFontColor = color;
+            cursor.mergeCharFormat(format); // 合并字体格式
+            ui->textEditArea->setTextCursor(cursor); // 更新文本光标
+            mFontColor = color; // 保存颜色
         }
     });
 
+    // 发送按钮的点击事件
     connect(ui->sendBtn, &QPushButton::clicked, this, [this]() {
-        if (ui->textEditArea->toPlainText().isEmpty()) {
-            return;
+        if (ui->textEditArea->toPlainText().isEmpty()) { // 如果文本为空
+            return; // 不做任何操作
         }
 
-        sendMessage(ui->textEditArea->toPlainText());
+        sendMessage(ui->textEditArea->toPlainText()); // 发送文本消息
 
-        ui->textEditArea->clear();
+        ui->textEditArea->clear(); // 清空文本编辑区
     });
 
+    // 处理接收到的消息
     connect(mNetworkManager, &ChatNetworkManager::messageReceived, this, [this](const ChatMessage& chatMessage) {
-        appendMessageToChat(chatMessage);
-        // 保存历史记录
-        mDatabaseManager->saveChatHistory(chatMessage);
+        appendMessageToChat(chatMessage); // 将消息添加到聊天窗口
+        mDatabaseManager->saveChatHistory(chatMessage); // 保存聊天记录
     });
 }
 
+// 加载样式表
 void ChatWindow::loadStyle() {
-    // 加载 QSS 文件
-    QFile file(":/chat.qss");
-    if (file.open(QFile::ReadOnly)) {
-        QString styleSheet = file.readAll();
-        this->setStyleSheet(styleSheet);
+    QFile file(":/chat.qss"); // 打开样式表文件
+    if (file.open(QFile::ReadOnly)) { // 如果文件打开成功
+        QString styleSheet = file.readAll(); // 读取样式表内容
+        this->setStyleSheet(styleSheet); // 设置样式表
     }
 }
 
+// 处理窗口关闭事件
 void ChatWindow::closeEvent(QCloseEvent *event) {
-    // 关闭网络连接
     if (mNetworkManager) {
-        mNetworkManager->disconnect();
+        mNetworkManager->disconnect(); // 关闭网络连接
     }
 
-    emit closed();
+    emit closed(); // 发出关闭信号
 
-    event->accept();
+    event->accept(); // 接受关闭事件
 }
 
+// 加载聊天历史记录
 void ChatWindow::loadHistory() {
-    QList<ChatMessage> chatList = mDatabaseManager->getChatHistory(mOtherID);
+    QList<ChatMessage> chatList = mDatabaseManager->getChatHistory(mOtherID); // 获取聊天记录
 
     for (auto& chatMessage : chatList) {
-        appendMessageToChat(chatMessage, true);
-        qDebug() << "Load history: " << chatMessage.content;
+        appendMessageToChat(chatMessage, true); // 将历史记录添加到聊天窗口
+        qDebug() << "Load history: " << chatMessage.content; // 输出加载的聊天记录
     }
 }
 
+// 发送聊天消息
 void ChatWindow::sendMessage(const QString& message, const ChatMessage::Type type) {
-
     ChatMessage chatMessage;
 
-    chatMessage.type = type;
-    chatMessage.senderID = mSelfID;
-    chatMessage.receiverID = mOtherID;
-    chatMessage.content = message;
-    chatMessage.timestamp = QDateTime::currentDateTime();
-    chatMessage.font = mFont;
-    chatMessage.fontColor = mFontColor;
+    chatMessage.type = type; // 设置消息类型
+    chatMessage.senderID = mSelfID; // 设置发送者ID
+    chatMessage.receiverID = mOtherID; // 设置接收者ID
+    chatMessage.content = message; // 设置消息内容
+    chatMessage.timestamp = QDateTime::currentDateTime(); // 设置时间戳
+    chatMessage.font = mFont; // 设置字体
+    chatMessage.fontColor = mFontColor; // 设置字体颜色
 
-    appendMessageToChat(chatMessage);
-    mNetworkManager->sendChatMessage(chatMessage);
+    appendMessageToChat(chatMessage); // 将消息添加到聊天窗口
+    mNetworkManager->sendChatMessage(chatMessage); // 发送消息
 
-    // 保存历史记录
-    mDatabaseManager->saveChatHistory(chatMessage);
+    mDatabaseManager->saveChatHistory(chatMessage); // 保存聊天记录
 }
 
+// 将消息添加到聊天窗口
 void ChatWindow::appendMessageToChat(const ChatMessage& chatMessage, bool isHistory) {
-
     QDateTime curTime = chatMessage.timestamp;
 
     qint64 intervalSeconds = std::numeric_limits<qint64>::max();
 
     if (!mLastSendTime.isNull()) {
-        intervalSeconds = mLastSendTime.secsTo(curTime);
+        intervalSeconds = mLastSendTime.secsTo(curTime); // 计算上一次消息到当前消息的时间间隔
     }
     mLastSendTime = curTime;
 
     QString timeInfo;
 
-    if (intervalSeconds > 120) {
+    if (intervalSeconds > 120) { // 如果时间间隔大于 120 秒
         timeInfo = QString("<div style='text-align:center; color: gray; font-size: 11px; margin: 0px'>"
                            "%1"
                            "</div>")
-                       .arg(chatMessage.timestamp.toString("MM-dd hh:mm"));
+                       .arg(chatMessage.timestamp.toString("MM-dd hh:mm")); // 格式化时间
     }
 
     QString formattedContent;
 
-    switch (chatMessage.type) {
+    switch (chatMessage.type) { // 根据消息类型格式化内容
     case ChatMessage::Text:
-        formattedContent = chatMessage.content;
+        formattedContent = chatMessage.content; // 文本消息
         break;
     case ChatMessage::Image: {
         QString localImagePath;
 
         if (chatMessage.senderID == mSelfID) {
-            localImagePath = chatMessage.content;
+            localImagePath = chatMessage.content; // 发送者发送的图片使用原始路径
         }
-        else if (isHistory) {
-            // 提取文件名
-            QString fileName = QFileInfo(QUrl(chatMessage.content).path()).fileName();
+        else if (isHistory) { // 如果是历史记录
+            QString fileName = QFileInfo(QUrl(chatMessage.content).path()).fileName(); // 提取文件名
 
-            // 获取完整的保存路径
-            localImagePath = QDir(mLocalImagePath).filePath(fileName);
+            localImagePath = QDir(mLocalImagePath).filePath(fileName); // 获取本地图片路径
             qDebug() << "History locaoImagePath: " << localImagePath;
         }
         else {
-            localImagePath = downloadImage(chatMessage.content);
+            localImagePath = downloadImage(chatMessage.content); // 下载图片
         }
 
-        if (localImagePath.isEmpty()) {
-            formattedContent = "Image not found";
+        if (localImagePath.isEmpty()) { // 如果图片路径为空
+            formattedContent = "Image not found"; // 显示图片未找到
         }
         else {
             QImage image(localImagePath);
 
-            const double hwRatio = static_cast<double>(image.height()) / image.width();
+            const double hwRatio = static_cast<double>(image.height()) / image.width(); // 计算高度宽度比
             const int widthLimit = 300;
             const int heightLimit = 200;
 
             int width = image.width();
             int height = image.height();
 
-            if (width > widthLimit) {
+            if (width > widthLimit) { // 如果宽度超出限制
                 width = widthLimit;
                 height = width * hwRatio;
             }
-            if (height > heightLimit) {
+            if (height > heightLimit) { // 如果高度超出限制
                 height = heightLimit;
                 width = height / hwRatio;
             }
 
             formattedContent = QString("<img src='%1' alt='Image' width='%2' height='%3'>")
-                                   .arg(localImagePath, QString::number(width), QString::number(height));
+                                   .arg(localImagePath, QString::number(width), QString::number(height)); // 格式化图片标签
 
             qDebug() << formattedContent;
         }
@@ -264,7 +273,7 @@ void ChatWindow::appendMessageToChat(const ChatMessage& chatMessage, bool isHist
     }
     case ChatMessage::File:
         QString fileName = chatMessage.receivedFileName.isEmpty() ? QFileInfo(chatMessage.content).fileName() : chatMessage.receivedFileName;
-        formattedContent = "<a href='" + chatMessage.content + "'>" + fileName + "</a>";
+        formattedContent = "<a href='" + chatMessage.content + "'>" + fileName + "</a>"; // 格式化文件链接
         break;
     }
 
@@ -297,17 +306,17 @@ void ChatWindow::appendMessageToChat(const ChatMessage& chatMessage, bool isHist
         ui->textShowArea->setHtml(ui->textShowArea->toHtml() + timeInfo + formattedMessage);
     }
 
-    // qDebug() << ui->textShowArea->toHtml();
-
     // 更新面板
     ui->textShowArea->update();
 
     // 确保滚动条到达消息底部
     ui->textShowArea->moveCursor(QTextCursor::End);
-
 }
 
+// 下载图片
 QString ChatWindow::downloadImage(const QString &urlString) {
+    qDebug() << "Downloading...";
+
     // 使用 QtConcurrent::run 在后台线程中处理下载
     QFuture<QString> future = QtConcurrent::run([=]() {
         QNetworkAccessManager manager;
@@ -321,7 +330,7 @@ QString ChatWindow::downloadImage(const QString &urlString) {
         QByteArray imageData = reply->readAll();
         QImage image;
         if (!image.loadFromData(imageData)) {
-            qWarning() << "Failed to load image from data.";
+            qWarning() << "Failed to load image from data."; // 输出警告信息
             reply->deleteLater();
             return QString();
         }
@@ -336,7 +345,7 @@ QString ChatWindow::downloadImage(const QString &urlString) {
         QDir dir;
         if (!dir.exists(mLocalImagePath)) {
             if (!dir.mkpath(mLocalImagePath)) {
-                qWarning() << "Failed to create directory:" << mLocalImagePath;
+                qWarning() << "Failed to create directory:" << mLocalImagePath; // 输出警告信息
                 reply->deleteLater();
                 return QString();
             }
@@ -344,13 +353,13 @@ QString ChatWindow::downloadImage(const QString &urlString) {
 
         // 保存图像到本地
         if (!image.save(fullPath, "JPEG")) {
-            qWarning() << "Failed to save image to" << fullPath;
+            qWarning() << "Failed to save image to" << fullPath; // 输出警告信息
             reply->deleteLater();
             return QString();
         }
 
         reply->deleteLater();
-        return QFileInfo(fullPath).absoluteFilePath();
+        return QFileInfo(fullPath).absoluteFilePath(); // 返回保存的图像路径
     });
 
     return future.result();  // 阻塞直到后台线程完成
